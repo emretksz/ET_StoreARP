@@ -28,7 +28,6 @@
     <Folder Include="Views\Product\Particals\" />
     <Folder Include="Views\Shipping\Component\" />
     <Folder Include="Views\YasEkle\" />
-    <Folder Include="wwwroot\ExcelTemplates\" />
   </ItemGroup>
 
   <ItemGroup>
