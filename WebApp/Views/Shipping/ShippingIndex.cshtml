@@ -1,0 +1,320 @@
+﻿@using X.PagedList.Mvc.Core;
+@using X.PagedList;
+@model IPagedList<Entities.Concrete.Shippings>
+@{
+    Layout = Layout;
+}
+@{
+
+    bool yekiVarmi = false;
+    if (ViewBag.Yetki!=null)
+    {
+        yekiVarmi = true;
+    }  
+    bool depoMu = false;
+    if (ViewBag.depoMu != null)
+    {
+        depoMu = true;
+    }
+}
+@*<div class="col-lg-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Siparişler </h4>
+            <div class="table-responsive">
+                <table class="table ">
+                    <thead>
+                        <tr>
+                            <th>
+                                Firma
+                            </th>
+                          @*  <th>
+                                Ürünler
+                            </th>
+                            <th>
+                                Sipariş Tarihi
+                            </th>
+                            <th>
+                                Sipariş Miktarı
+                            </th>
+                            <th>
+                                Sipariş Durumu
+                            </th>
+                            <th>
+                                Fiyat
+                            </th>
+                            <th>
+                               
+                            </th>
+                            <th>
+
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            if (Convert.ToInt64(item.ShippingCount)>0)
+                            {
+                                
+                         
+                            @*<tr>
+                                @*<td class="py-1">
+                            <img src="../../images/faces/face1.jpg" alt="image">
+                            </td>
+
+                            @*</tr>
+
+                            <tr>
+                                <td>
+                                  
+                                        @item.Tenant.TenantName
+                                    
+                                   @* else
+                                    {
+                                        <span> "Firma Adı gelecek";</span>
+                                    }
+                                </td>
+                               
+                              @*  <td>
+                                    @foreach (var item2 in item.Product)
+                                    {
+                                        @item2.ModelCode;<p>,</p>
+                                    }
+                                </td>
+                                  <td>
+                                    @item.RegisterDate.ToShortDateString()
+                                </td>
+                                  <td>
+                                    @item.ShippingCount 
+                                </td>
+                                <td>
+                                   @item.ShippingStasus
+                                </td>
+                                    <td>
+                                        @item.SiparisTutari
+                                    </td>
+                             @*   <td>
+                                    @item.ShippingStasus
+                                </td>*
+                              @*  <td>
+                                    @item.Price
+                                </td>*@
+                               @* <td>
+                                    <a href="@Url.Action("ShippingDetails","Shipping",new{ShippinbgId=item.Id})">Detayına git</a>
+                                </td>
+                                <td>
+                                    @if (yekiVarmi)
+                                    {
+                                    <a onclick="DeleteShipping(item.Id)" href="@Url.Action("DeleteShipping","Shipping",new{ShippinbgId=item.Id})">Siparişi Sil</a>
+                                    }
+                                </td>
+                            </tr>
+                          
+                            }
+
+                        }
+                        <tr>
+                            <td>
+                                <div class="btn-group" role="group" aria-label="Basic example">
+                                    @Html.PagedListPager((IPagedList)Model,page=>Url.Action("ShippingIndex",new{page}),
+                                    new X.PagedList.Web.Common.PagedListRenderOptions {
+                                    DisplayLinkToIndividualPages = true,
+                                    DisplayPageCountAndCurrentLocation = false,
+                                    MaximumPageNumbersToDisplay = 10,
+                                    LiElementClasses = new string[] { "page-item" },
+                                    PageClasses = new string[] { "page-link" }})
+                                </div>
+                            </td>
+
+                        </tr>
+                      
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>*@
+
+
+<div class="col-lg-12 grid-margin stretch-card" >
+    <div class="card">
+        <div class="card-body">
+            <center>
+
+            <h4 class="card-title">Firmalar</h4>
+            </center>
+            <div class="table-responsive">
+                <table id="example" class="table border" style="width:100%; border:double">
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css" />
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
+
+ <script>
+
+
+    $(document).ready(function () {
+        var q = [];
+        $.ajax({
+            url: '@Url.Action("ShippingIndexjson","Shipping")',
+            success: function (datam) {
+                var qqq = JSON.parse(datam);
+                //console.log(datam);
+                for (var i = 0; i < qqq.length; i++) {
+                    //var ssss = [
+                    //   ];
+                    q.push({'Id': qqq[i].Id, 'TenantName': qqq[i].TenantName, 'RegisterDate': qqq[i].RegisterDate, 'ShippingCount': qqq[i].ShippingCount, 'SiparisTutari': qqq[i].SiparisTutari , 'ShippingStasus': qqq[i].ShippingStasus });
+
+                }
+                //console.log([{ 'id': 20, 'main': 'hola', 'shrinked': false, 'clicks': 2000 }, { 'id': 21, 'main': 'hola', 'shrinked': false, 'clicks': 283000 }]);
+                // console.log(q);
+                $('#example').dataTable({
+                    "data": q,
+                    "autoWidth": true,
+                    "order": [[0, "desc"]],
+                    "columns": [
+                        { "data": "Id" },
+                        { 'data': 'TenantName', 'title': 'Firma Adı' },
+                        { 'data': 'RegisterDate', 'title': 'Sipariş Tarihi', 'render': function (jsonDate) {
+                                    var date = jsonDate.substr(0, 10)
+                                    return date;
+                                
+                                } },
+                        { 'data': 'ShippingCount', 'title': 'Sipariş Miktarı' },
+                        //{ 'data': 'SiparisTutari', 'title': 'Sipariş Tutarı' },
+                        { 'data': 'ShippingStasus', 'title': 'Sipariş Durumu' },
+                        //{ 'data': 'shrinked' },
+                        //{ 'data': 'clicks' },
+                      
+
+                        {
+                            "data": "SiparisTutari",
+                            "title": 'Sipariş Tutarı',
+                            "render": function (data, type, row, meta) {
+                                if ('@depoMu' == 'True') {
+                                    return ''
+                                    //return '<a  data-id="' + data + '" onclick="DeleteShipping(event)" href = "#" > Siparişi Sil </a>'
+                                } else {
+                                    return data;
+                                }
+                                //return '<button class="btn btn-outline-secondary" data-id="' + data + '" onclick="ExceleRaportla(event)">Excele Raporla </button>'
+                            }
+                        },
+                        {
+                            "data": "Id",
+                           "title": 'İşlem',
+                            "render": function (data, type, row, meta) {
+                                if ('@yekiVarmi' == 'True') {
+                                    //console.log(row);
+                                    if (row.ShippingStasus== "Tamamlandı") {
+                                     return '<button class="btn btn-outline-secondary" data-id="' + data + '" onclick="DeleteShipping(event)">Siparişi Sil</button><button  style="margin-left:10px "class="btn   btn-success" data-id="' + data + '" onclick="UpdateShippingDetails(event)">Tamamlanan Siparişi Güncelle</button>'
+                                  }else  {
+                                        return '<button class="btn btn-outline-secondary" data-id="' + data + '" onclick="DeleteShipping(event)">Siparişi Sil</button>' + '<button style="margin-left:10px " class="btn btn-warning" data-id="' + data + '" onclick="UpdateShippingDetailsAll(event)">Siparişi Düzenle</button>'
+                                  }   
+                              
+                                    //return '<a  data-id="' + data + '" onclick="DeleteShipping(event)" href = "#" > Siparişi Sil </a>'
+                                } else {
+                                    return '';
+                                }
+                                //return '<button class="btn btn-outline-secondary" data-id="' + data + '" onclick="ExceleRaportla(event)">Excele Raporla </button>'
+                            }
+                        }
+
+                        
+
+                    ],
+                    "language": {
+                        "search": "Arama Yap:",
+                        "paginate": {
+                            "first": "İlk",
+                            "last": "Son",
+                            "next": "İlerile",
+                            "previous": "Önceki"
+
+                        },
+                        "sInfo": "Şu Anki Sayfa {_START_} Toplam Sayfa {_TOTAL_}",// text you want show for info section
+
+
+                    },
+                })
+            }
+
+        });
+
+    });
+
+
+    //function ExceleRaportla(e) {
+    //    var spId = e.target.getAttribute('data-id');
+    //    //window.location.href = '@Url.Action("GetShippingOrderListForExcel","Temp")?Id=' + spId;
+
+    //    var url = '@Url.Action("GetShippingOrderListForExcel","Temp")?Id=' + spId;
+    //    $.ajax({
+    //        url: url,
+    //        success: function () {
+    //            window.location.href = '@Url.Action("Dowloand","Temp")';
+    //            //setTimeout(ShippingFirst, 3000);
+    //        }
+    //    });
+
+    //}
+    function DeleteShipping(e) {
+        var spId = e.target.getAttribute('data-id');
+        swal({
+            title: "Siparişi Silmek istiyor musunuz ?",
+            text: "Emin Misiniz?",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+            buttons: ["Hayır", "Evet"],
+        }).then((willDelete) => {
+            if (willDelete) {
+                $.ajax({
+                    url: '@Url.Action("DeleteShipping","Shipping")?ShippinbgId=' + spId,
+                    success: function () {
+                        swal("", {
+                            icon: "success",
+                        });
+                        window.location.reload();
+
+                    }
+                });
+            }});
+       
+    }
+    function UpdateShippingDetails(e) {
+        var spId = e.target.getAttribute('data-id');
+        $.ajax({
+            url: '@Url.Action("CheckShipping","Shipping")?spId=' + spId,
+            success: function (data) {
+                console.log(data);
+                if (data == 'ok') {
+                    window.location.href = "@Url.Action("UpdateFinishShippingListView","Shipping")?spId=" + spId;
+                }
+                else {
+                    swal({
+                        title: "Dikkat",
+                        title: "Sipariş içerisinde ürün bulunmuyor,lütfen sipariş dökümlerinden fis kontrolü yapınız! ",
+                        icon: "warning",
+                    });
+                }
+            }
+        })
+    }
+     function UpdateShippingDetailsAll(e) {
+        swal({
+            title:"dikkat",
+            title:"Sipariş Miktarları ve Renk Miktarlarında Sorun Yaşanmaması için Lütfen Siparişe Ürün Renk Adetleri Girmeden Önce Düzenleme Yapınız!",
+            icon: "warning",
+        }).then((data)=>{
+            var spId = e.target.getAttribute('data-id');
+            window.location.href = "@Url.Action("UpdateAllShipping","Shipping")?shippingId=" + spId;
+        })
+        
+    }
+
+ </script>

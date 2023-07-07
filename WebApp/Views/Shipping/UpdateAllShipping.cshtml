@@ -1,0 +1,222 @@
+﻿@model List<Entities.Concrete.ShippingDetails>
+
+    <style>
+    #shippingProductNew{
+
+    }
+    </style>
+
+
+<div class="col-lg-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Sipariş Güncelleme</h4>
+            <p class="card-description">
+                <!-- Trigger the modal with a button -->
+                <button style="float:right" type="button" class="btn btn-info btn-md" data-toggle="modal" onclick="ModalOpen()" data-target="#myModal">Model Ekle</button>
+            </p>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Model Adı</th>
+                            <th>Model Kodu</th>
+                            <th>Adet</th>
+                            <th>Fiyat</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                        <tr>
+                            <td>@item.Products.ModelName</td>
+                            <td>@item.Products.ModelCode</td>
+                                <td>
+                                    <span id="mevcutMiktar_@item.ProductId">@item.Amount</span>
+                                    <input style="width:100px" class="form-control" id="miktarInputGoster_@item.ProductId" value="@item.Amount" hidden />
+                            </td>
+                                <td>
+                                    <p id="mevcutTutar_@item.ProductId">@( item.Price!=0?(item.Price / item.ShippingCount):0)</p>
+                                    <input style="width:100px" class="form-control" id="tutarInputGoster_@item.ProductId" value="@(item.Price!=0?(item.Price / item.ShippingCount):0)" hidden />
+                                
+                                </td>
+                                <td>
+                                    <buton style="margin:2px" id="ayar_@item.ProductId" onclick="showInput('@item.ProductId')" class="btn btn-primary">Düzenle</buton>    
+                                    <buton style="margin:2px" onclick="sil('@item.ProductId')" class="btn btn-danger">Sil</buton>
+                                    <buton style="margin:2px" id="update_@item.ProductId" onclick="UpdateShippingById('@item.ProductId')" class="btn btn-success" hidden>güncelle</buton>
+                                    <buton style="margin:2px" id="cancel_@item.ProductId" onclick="cancel('@item.ProductId')" class="btn btn-warning" hidden>iptal et</buton>
+                                </td>
+                          </tr>
+                        }
+                      
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+@*
+
+modal fade açacam ve güncelledikçe sayfa yenilenecek başka türlü sığmıyor!!!!!!!!!!
+
+
+*@
+
+
+
+
+
+@section ModalFade{
+    <!-- Modal -->
+    <div class="modal fade bd-example-modal-xl" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel" aria-hidden="true" >
+        <div class="modal-dialog modal-xl">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" onclick="ModalClose()">&times;</button>
+                    <h4 class="modal-title"></h4>
+                </div>
+                <div class="modal-body">
+                    <div class="col-md-6 grid-margin stretch-card" style="height:25%;margin:auto">
+                        <div class="card" style="height:25%">
+                            <div class="card-body">
+
+                                <div>
+                                    <span style="font-weight:bold">Arama yap</span> <br />    <br />
+                                    <input class="form-control" type="text" id="search" placeholder="arama yap.." name="SearchText">
+                                </div>
+                                <button id="gonder" class="btn btn-primary col-12"  style="margin-top:15px"type="submit">Ara</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class=" grid-margin stretch-card" style="margin-top:10px">
+                        <div class="card" id="shippingProductNew">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+@*                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+*@                </div>
+            </div>
+
+        </div>
+    </div>
+    <input value="@ViewBag.SpId" id="spId" hidden/>
+    <script>
+
+        $('#gonder').click(function (e) {
+            var ay1;
+            var gender1;
+            var search;
+
+            const text = $('#search').val();
+            if (text.length > 0)
+                search = $('#search').val();
+            var p = {
+                ay1: Number(ay1),
+                gender1: Number(gender1),
+                SearchText: search,
+                Search: true
+            }
+            $.ajax({
+                url: '@Url.Action("UpdateAllShippingProductPartical","Shipping")',
+                traditional: true,
+                data: p,
+                success: function (htmls) {
+                    $('#shippingProductNew').html(htmls);
+                }
+            })
+        });
+
+    </script>
+}
+
+
+
+<script>
+   
+    function ModalOpen(){
+        swal({
+            title: "Dikkat",
+            title: "Ürünleri tek tek ekleyiniz",
+            icon: "info",
+        }).then(()=>{
+            $('#myModal').modal("show");
+        })
+        
+
+        //$('#myModal').click();
+    } 
+    function ModalClose(){
+        $("#myModal").modal('hide');
+        //$('#myModal').click();
+    }
+    function showInput(productId){
+        //$('#gonder').click();
+        $('#mevcutMiktar_' + productId).attr("hidden", "hidden");
+        $('#mevcutTutar_' + productId).attr("hidden", "hidden");
+        $('#ayar_' + productId).attr("hidden", "hidden");
+        $('#miktarInputGoster_' + productId).removeAttr("hidden");
+        $('#tutarInputGoster_' + productId).removeAttr("hidden");
+        $('#update_' + productId).removeAttr("hidden");
+        $('#cancel_' + productId).removeAttr("hidden");
+    } 
+    function cancel(productId) {
+        $('#mevcutMiktar_' + productId).removeAttr("hidden");
+        $('#mevcutTutar_' + productId).removeAttr("hidden");
+        $('#ayar_' + productId).removeAttr("hidden");
+        $('#miktarInputGoster_' + productId).attr("hidden", "hidden");
+        $('#tutarInputGoster_' + productId).attr("hidden", "hidden");
+        $('#update_' + productId).attr("hidden", "hidden");
+        $('#cancel_' + productId).attr("hidden", "hidden");
+    } 
+    function UpdateShippingById(productId) {
+      
+        var min = $('#miktarInputGoster_'+productId).val();
+        var tutar = $('#tutarInputGoster_' + productId).val();
+        var total= parseFloat(min)* parseFloat(tutar);
+
+        console.log("min",min);
+        console.log("tutar",tutar);
+        console.log("total",total);
+
+        $.ajax({
+            url: '@Url.Action("UpdateShippingById","Shipping")?shippingId=' + '@ViewBag.SpId ' + '&productId=' + productId + '&count=' + min + '&totalTutar=' + total,
+            success:function(){
+                window.location.href = "@Url.Action("UpdateAllShipping","Shipping")?shippingId=" + '@ViewBag.SpId ';
+            }
+        });
+
+    }    
+    function sil(productId) {
+
+        swal({
+            title: "Dikkat",
+            text: "Silmek istediğinize emin misiniz?",
+            icon: "warning",
+            buttons:["Hayır","Evet"],
+        }).then((event) => {
+         
+            if(event){
+                $.ajax({
+                    url: '@Url.Action("DeleteShippingById","Shipping")?shippingId=' + '@ViewBag.SpId ' + '&productId=' + productId,
+                    success: function () {
+                        window.location.href = "@Url.Action("UpdateAllShipping","Shipping")?shippingId=" + '@ViewBag.SpId ';
+                    }
+                });
+            }else{
+                swal({
+                    title: "İptal edildi",
+                    icon: "warning",
+                })
+            }
+        })
+
+
+      
+
+    }
+
+</script>

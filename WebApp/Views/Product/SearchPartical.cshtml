@@ -1,0 +1,142 @@
+﻿@using static Entities.Enums.Enums;
+<div class="table-responsive">
+@*    <form id="form" >*@
+        <div>
+            <span style="font-weight:bold">Arama yap</span> <br />    <br />
+            <input class="form-control" type="text" id="search" placeholder="Search.." name="SearchText">
+        </div>
+        <br />
+        <hr />
+        <div>
+        <br />
+        <span style="font-weight:bold">Firma</span><br />
+        <br />
+        <div class="form-group">
+          
+            <select @*id="ProductId"*@ style="width:120px;margin-left:1px" name="TenantId" id="TenantId" class="form-control" onchange="TenantIdChange()">
+                <option class="form-control" name="" value="">Seçim Yapınız</option>
+                <option class="form-control" name="TenantId" value=" "></option>
+                @foreach (var item in (List<Entities.Concrete.Tenant>)ViewBag.Tenant)
+                {
+                    <option class="form-control" name="TenantId" value="@item.TenantName">@item.TenantName </option>
+                }
+            </select>
+        </div> 
+        <hr />
+        <div>
+        <span style="font-weight:bold">Yaş</span><br />
+        <br />
+        <div class="form-group">
+          
+            <select @*id="ProductId"*@ style="width:120px;margin-left:1px" name="ProductAgesId" id="ProductAgesId" class="form-control" onchange="productChanege()">
+                <option class="form-control" name="" value="">Seçim Yapınız</option>
+                @foreach (var item in (List<Entities.Concrete.ProductAges>)ViewBag.AgeList)
+                {
+                    <option class="form-control" name="ProductAgesId" value="@item.Id">@item.Name </option>
+                }
+            </select>
+        </div>
+
+      @*  <input type="radio" placeholder="Search.." id="ay1_1"  name="ay1" value="@((int)Age.ÜçAltı)"> 3-6 ay <br />
+        <input type="radio" placeholder="Search.." id="ay1_2" name="ay1" value="@((int)Age.AltıDokuz)"> 6-9 ay<br />
+        <input type="radio" placeholder="Search.." id="ay1_3" name="ay1" value="@((int)Age.OnOnDört)"> 10-14 ay<br />
+        <input type="radio" placeholder="Search.." id="ay1_4" name="ay1" value="@((int)Age.OndörtOnSekiz)"> 14-18 ay<br />*@
+        </div>
+        <hr />
+        <div>
+            <span style="font-weight:bold">Cinsiyet</span><br />
+        <input type="radio" placeholder="Search.." id="gender1_1" name="gender1" value="@((int)Gender.Erkek)"> Erkek<br />
+        <input type="radio" placeholder="Search.." id="gender1_2" name="gender1" value="@((int)Gender.Kız)"> Kız<br />
+        </div>
+        <br />
+        <center>
+            <button id="gonder" class="btn btn-primary col-12" type="submit">Ara</button>
+            <button id="temizle" class="btn btn-warning col-8 mt-2" type="submit">Temizle</button>
+        </center>
+
+
+@*    </form>*@
+
+
+</div>
+</div>
+<script>
+    $('#temizle').click(function (e) {
+       //document.getElementById('ay1_' + '1').checked=false;
+       //document.getElementById('ay1_' + '2').checked=false;
+       //document.getElementById('ay1_' + '3').checked=false;
+       //document.getElementById('ay1_' + '4').checked=false;
+       document.getElementById('gender1_' + '1').checked=false;
+       document.getElementById('gender1_' + '2').checked=false;
+        window.location.reload();
+    });
+
+    function productChanege(){
+        var qq  = document.querySelector('#ProductAgesId');
+        //alert(qq.value);
+    }  
+   
+    $('#gonder').click(function(e){
+        $('#productDiv').attr('hidden','hidden');
+        $('#gizle').removeAttr('hidden');
+         //var ay1;
+        var gender1;
+   
+       // if (document.getElementById('ay1_'+'1').checked)
+       //     ay1 = $('#ay1_'+'1').val();
+       //if (document.getElementById('ay1_' + '2').checked)
+       //     ay1 = $('#ay1_' + '2').val();
+       // if(document.getElementById('ay1_'+'3').checked)
+       //     ay1 = $('#ay1_' + '3').val();
+       // if (document.getElementById('ay1_' + '4').checked)
+       //     ay1 = $('#ay1_' + '4').val();
+        var qq = document.querySelector('#ProductAgesId');
+        var ay1 = qq.value;
+       // console.log($('#ProductAgesId').val());
+        if (document.getElementById('gender1_' + '1').checked)
+            gender1 = $('#gender1_' + '1').val();
+        if (document.getElementById('gender1_' + '2').checked)
+            gender1 = $('#gender1_' + '2').val();
+
+        var firma = document.querySelector('#TenantId');
+        var tenant = firma.value;
+      
+        var search;
+        const text = $('#search').val();
+
+        if (text.length>0)
+         search= $('#search').val();
+          
+        //var query = $(this).serialize();
+        
+        var p = {
+            ay1:Number(ay1),
+            gender1: Number(gender1),
+            SearchText:search,
+            Search:true,
+            Tenant: tenant
+        }
+        $.ajax({
+            url: '@Url.Action("ProductPartical","Product")',
+            traditional: true,
+            data:p,
+            success: function (htmls) {
+                $('#productIndex').html(htmls);
+            }
+        })
+    });
+    //$(function () {
+    //    $('#myPager').on('click', 'a', function () {
+    //        console.log("evet");
+    //        $.ajax({
+    //            url: this.href,
+    //            type: 'GET',
+    //            cache: false,
+    //            success: function (result) {
+    //                $('#productIndex').html(result);
+    //            }
+    //        });
+    //        return false;
+    //    });
+    //});
+</script>

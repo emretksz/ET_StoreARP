@@ -1,0 +1,72 @@
+﻿@model List<Entities.Concrete.Product>
+@{
+    Layout = Layout;
+}
+<div class="col-lg-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <center>
+                <h4 class="card-title">Ürün Listesi</h4>
+            </center>
+            @* <p class="card-description">
+            Add class <code>.table</code>
+            </p>*@
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+
+                            <th>Ürün Resmi</th>
+                            <th>Barkod</th>
+                            <th>Model Kodu</th>
+                            <th>Model Adı</th>
+                            <th>Yaş</th>
+                            <th>Cinsiyet</th>
+                            <th>Renk</th>
+                            <th>Stok Adeti</th>
+                            <th>Eklenme Tarihi</th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+
+                            <tr>
+                                <td> <img src="@item.ModelImageUrl" width="25%" /></td>
+                                <td>@item.Barcode</td>
+                                <td>@item.ModelCode</td>
+                                <td>@item.ModelName</td>
+                                <td>@item.Age</td>
+                                <td>@item.Gender</td>
+                                <td>@item.ModelColor</td>
+                                <td>@item.Stock.StockCount</td>
+                                <td>@item.RegisterDate</td>
+                                @if (Convert.ToInt64(item.ModelCount) < 100 && Convert.ToInt64(item.ModelCount)>1)
+                                {
+                                    <td><label class="badge badge-warning">Stock Azalmış</label></td>
+                                }
+                                else if (Convert.ToInt64(item.ModelCount) ==0)
+                                {
+                                    <td><label stlye="color:black !important" class="badge badge-danger">Stokta yok</label></td>
+                                }
+                                else
+                                {
+                                    <td><label stlye="color:black !important" class="badge badge-success">Stockta var</label></td>
+
+                                }
+                            @*    <td>
+                                    <a href="@Url.Action("UpdateProductStock","Product",new{productId=item.Id})" class="btn btn-dark btn-icon-text">
+                                        Güncelle
+                                        <i class="ti-file btn-icon-append"></i>
+                                    </a>
+                                </td>*@
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

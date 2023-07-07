@@ -1,0 +1,101 @@
+﻿@using X.PagedList;
+@using X.PagedList.Mvc.Core;
+@model IPagedList<Entities.Concrete.Color>
+<div class="card">
+    <div class="card-body">
+        <h4 class="card-title">Modelin Tüm Renklerine  Ekle</h4>
+        @*<p class="card-description">
+
+        </p>*@
+        <span style="margin:5px">Tarih Gir :</span>
+        <input class="form-control col-md-5" type="number" placeholder="YYYY" value="@DateTime.Now.Year" min="2022" max="2100" id="fabrikaDate" style="margin:1px;">
+        <br />
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Renk</th>
+
+                        <th><center>Miktar</center></th>
+                        <th><center>BARCODE</center></th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        int i = 1;
+                        int colorCount = ViewBag.ColorCountForStock;
+                    }
+                    @Html.Hidden("colorStockCount",colorCount)
+                    @foreach (var item in Model.OrderBy(a => a.ColorName))
+                    {
+                        <tr>
+                            <td>@item.ColorName <input class="typeahead tt-input" type="text" id="color_@i" name="@item.ColorName" value="@item.Id" hidden></td>
+                            <td><input class="typeahead tt-input" type="number" id="colorCount_@i" name="@item.ColorName"></td>
+                            <td><input class="typeahead tt-input" type="text" id="barcode_@i" placeholder="BARCODE" name=""></td>
+                            <td></td>
+                        </tr>
+                        i++;
+                    }
+                    <tr>
+                        <td>
+                            @{
+                                var productCounts2 = colorCount;
+                                if (productCounts2 >= 25 &&  productCounts2<=36)
+                                {
+                                    productCounts2 = 3;
+                                }
+                                else if (productCounts2 > 36)
+                                {
+                                    productCounts2 = productCounts2 / 12;
+                                    productCounts2 = productCounts2 + 1;
+
+
+                                }
+                                else if (productCounts2 <= 12)
+                                {
+                                    productCounts2 = 1;
+                                }
+                                else if (productCounts2 > 12 && productCounts2 <= 24)
+                                {
+                                    productCounts2 = 2;
+                                }
+                            }
+                            <div class="btn-group" role="group" aria-label="Basic example">
+                                @for (int b = 0; b < productCounts2; b++)
+                                {
+                                    <a class="btn btn-outline-secondary" onclick="ProductColorPartical(@(b+1))" @*href="@Url.Action("AddShippingDetailsColorPartical","Shipping",new{color=b+1})"*@>@(b + 1)</a>
+                                }
+
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                       @* 
+                        <td>
+                            <div class="form-check form-check-danger" hidden>
+                                <label class="form-check-label">
+                                    <input type="checkbox" id="magazaMi" name="magazaMi" class="form-check-input" hidden 
+                                    Stoğu Mağazaya Ekle
+                                    <i class="input-helper"></i>
+                                </label>
+                            </div>
+                        </td>*@
+                            @* <input type="checkbox" id="magazaMi" name="magazaMi" /> <label class="ml-1"> Stoğu Mağazaya Ekle</label>*@
+                        @*  <td>
+                        </td>*@
+
+                        <td>
+                                <center>
+                            <button type="button" onclick="Calistir()" class="btn btn-primary btn-rounded btn-fw">Stoğa Ekle</button>
+                            </center>
+                        </td>
+
+                      
+                        @*    <td><label class="badge badge-danger"> <button class="badge badge-danger" onclick="Calistir()"> Gönder</button></label></td>*@
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

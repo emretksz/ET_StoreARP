@@ -1,0 +1,184 @@
+﻿@using X.PagedList;
+@using X.PagedList.Mvc.Core;
+@using X.PagedList.Mvc.Core.Fluent;
+@using static Entities.Enums.Enums;
+@using X.PagedList.Web.Common;
+@model IPagedList<Entities.Concrete.Product>
+@{
+    Layout = Layout;
+}
+@*@model PagedList<Entities.Concrete.Product>*@
+<div class="col-lg-10 grid-margin stretch-card" id="productDiv">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Renk Ekle</h4>
+
+            <div class="table-responsive">
+                <div >
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Ürün Resmi</th>
+                                <th>Barcod</th>
+                                <th>Ürün Kodu</th>
+                                <th>Model Adı</th>
+                                <th>Yaş</th>
+                                <th>Cinsiyet</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td> <img src="@item.ModelImageUrl" width="84px" height="84px" style="height:84px !important; width:84px !important;" /></td>
+                                    <td  >@item.Barcode</td>
+                                    <td >@item.ModelCode</td>
+                                    <td >@item.ModelName</td>
+                                    @if (item.ProductAges != null)
+                                    {
+                                        <td>@item.ProductAges.Name</td>
+                                    }
+                                    else
+                                    {
+                                        <td> </td>
+                                    }
+                                    <td>@item.Gender</td>
+                                    @*<td><label class="badge badge-danger">Pending</label></td>*@
+                                    <td>
+                                        <a class="btn btn-dark btn-fw" href="@Url.Action("GetAllProductAndStock","Product",new{id=item.Id})">
+                                            Stoğa Git
+                                        </a>
+                                        <a class="btn btn-warning btn-icon-text" href="@Url.Action("UpdateProduct","Product",new{id=item.Id})">
+                                            <i class="ti-reload btn-icon-prepend"></i>
+                                            Güncelle
+                                        </a>
+                                        <a class="btn btn-danger  btn-icon" onclick="DeleteProduct(@item.Id)" @* href="@Url.Action("Delete","Product",new{id=item.Id})"*@>
+                                            <i class="mdi mdi-delete-forever"></i>
+
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                            <tr>
+                                <td>
+
+                                    @{
+                                        bool searchMu = ViewBag.search;
+                                    }
+                                    @if (!searchMu)
+                                    {
+
+                                        <div class="btn-group" role="group" aria-label="Basic example">
+                                            @Html.PagedListPager((IPagedList)Model,page=>Url.Action("ProductIndex",new{page}),
+                                        new X.PagedList.Web.Common.PagedListRenderOptions {
+                                        DisplayLinkToIndividualPages = true,
+                                        DisplayPageCountAndCurrentLocation = false,
+                                        MaximumPageNumbersToDisplay = 10,
+                                        LiElementClasses = new string[] { "page-item" },
+                                        PageClasses = new string[] { "page-link" }})
+                                        </div>
+                                    }
+
+                                </td>
+                            </tr>
+
+
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    
+<div class="col-lg-10 grid-margin stretch-card" id="gizle" hidden>
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Ürün</h4>
+
+            <div class="table-responsive" id="productIndex">
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-lg-2 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body" id="getir">
+        </div>
+    </div>
+</div>
+
+
+@section Script{
+    <script>
+
+        $(document).ready(function () {
+            //$.ajax({
+            //    url: '@Url.Action("ProductPartical","Product")',
+            //    success: function (htmls) {
+
+            //        $('#productIndex').html(htmls);
+            //    }
+
+            //})
+                    $.ajax({
+                        url: '@Url.Action("SearchPartical","Product")',
+                        success: function (htmls) {
+                            $('#getir').html(htmls);
+                        }
+                    })
+
+
+
+        });
+        function DeleteProduct(id) {
+            swal({
+                title: "Ürünü Silmek istiyor musunuz?",
+                text: "Ürün silme işleminde,  ürünün kayıtlı olduğu tüm siparişler ve stok bilgileriyle birlikte silinecektir!",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+                buttons: ["Hayır", "Evet"],
+            }).then((willDelete) => {
+                if (willDelete) {
+
+                    $.ajax({
+                        url: '@Url.Action("Delete","Product")?id=' + id,
+                        success: function () {
+                            swal("", {
+                                icon: "success",
+                            });
+                            window.location.href = '@Url.Action("ProductIndex","Product")';
+                        }
+
+                    });
+
+                }
+            });
+        }
+
+        //function ProductPage(page) {
+
+        //    $.ajax({
+        //        url: '@Url.Action("ProductIndex","Product")?page=' + page,
+        //        success: function (data) {
+        //            $('#colorParticalAdd').html(data);
+        //        }
+        //    });
+    </script>
+           @*<script type="text/javascript" src="https://cdn.datatables.net/1.10.8/js/jquery.dataTables.min.js"></script>*@
+ @*   <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css" />
+*@
+
+        <script>
+            //var dataSet = [
+            //    ['Tiger Nixon', 'System Architect', 'Edinburgh', '5421', '2011/04/25', '$320,800'],
+            //    ['Garrett Winters', 'Accountant', 'Tokyo', '8422', '2011/07/25', '$170,750'],
+
+
+
+
+        </script>
+
+}

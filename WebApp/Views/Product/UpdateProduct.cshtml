@@ -1,0 +1,75 @@
+﻿@{
+    Layout = Layout;
+}
+@model Entities.Concrete.Product
+<div class="col-lg-11 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Renk Ekle</h4>
+
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Ürün Resmi</th>
+                            <th>Ürün Resmi</th>
+                            <th>Barcode</th>
+                            <th>Barcode</th>
+                            <th>Ürün Kodu</th>
+                            <th>Ürün Kodu</th>
+                            <th>Model Adı</th>
+                            <th>Model Adı</th>
+                            <th>Cinsiyet</th>
+                            <th>Cinsiyet</th>
+                            <th>Yaş</th>
+                            <th>Yaş</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                      
+
+                            <tr>
+                                <form asp-action="UpdateProduct" asp-controller="Product" method="Post" enctype="multipart/form-data">
+                                    @Html.Hidden("ProductId",Model.Id)
+                                <td> <img src="@Model.ModelImageUrl" width="25%" /></td>
+                            <td><input type="file" id="ModelImageUrl" name="file"> </td>
+                                <td>@Model.Barcode </td>
+                                <td><input type="text" id="Barcode" name="Barcode" value="@Model.Barcode"> </td>
+                                <td>@Model.ModelCode </td>
+                                    <td><input type="text" id="ModelCode" name="ModelCode" value="@Model.ModelCode"> </td>
+                                <td>@Model.ModelName</td>
+                                    <td><input type="text" id="ModelName" name="ModelName" value="@Model.ModelName"> </td>
+                                <td>@Model.Gender</td>
+                            <td>  @Html.DropDownList("Gender", (SelectList)ViewBag.Gender)</td>
+                                  
+                                    @*<td><input type="text" id="Gender" name="Gender" value="@Model.Gender"> </td>*@
+                                <td>@Model.ProductAges.Name<td>
+
+                            <td>@Html.DropDownList("ProductAgesId", (SelectList)ViewBag.productAge)</td>
+                                    @*<td><label class="badge badge-danger">Pending</label></td>*@
+                                <td>
+                                    <button type="submit" class="btn btn-success btn-rounded btn-fw" >Kaydet</button>
+                                </td>
+                                </form>
+                            </tr>
+                        
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+@section Script{
+
+
+    <script>
+        function Update() {
+
+        }
+        function Delete() {
+
+        }
+
+    </script>
+
+}

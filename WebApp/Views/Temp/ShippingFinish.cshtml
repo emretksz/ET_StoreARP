@@ -1,0 +1,174 @@
+﻿@model List<Entities.Dtos.ShippingProduct>
+
+
+<div class="col-lg-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Sipariş Fiyatlandırma</h4>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Model Kodu</th>
+                            <th>Model Adı</th>
+                            <th>Yaş</th>
+                            <th>Cinsiyet</th>
+                            <th>Rengi</th>
+                            <th>Miktar</th>
+                            <th>Birim Fiyatı</th>
+                            <th>Tutarı</th>
+                          
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            int i = 1;
+                        }
+                        @foreach (var item in Model)
+                        {
+                            foreach (var item2 in item.ShippingLists)
+                            {
+                                @Html.Hidden("modelCount",item.ShippingLists.Count)
+                                if (item2.Count>0)
+                                {
+                                    
+                                    <tr>
+                                        <td hidden><input id="productIdd_@i" value="@item2.ProductId" /></td>
+                                        <td hidden><input id="shippingIdd_@i" value="@item.ShippingId" /></td>
+                                        <td hidden><input id="colorIdd_@i" value="@item2.ColorId" /></td>
+                                         @{Console.WriteLine(item2.ColorId);}
+                                        <td>@item2.ModelCode</td>
+                                        <td>@item2.ProductName</td>
+                                        <td>@item2.Age</td>
+                                        <td>@item2.Gender</td>
+                                        <td>@item2.ColorName</td>
+                                        <td><input id="adet_@i" value="@item2.Count" hidden> @item2.Count</td>
+                                        <td> <input type="number" id="birimFiyat_@i" placeholder="Birim Fiyatı"/></td>
+                                    <td> <span id="sonuc_@i"></span>₺</td>
+                                      @*  <td><label class="badge badge-danger">Pending</label></td>*@
+                                    </tr>
+                                i++;
+                                }
+                            }
+                            <tr>
+                                <td> </td>
+                                <td> </td>
+                                <td> </td>
+                                <td> </td>
+                                <td> </td>
+                                <td> </td>
+                                <td>
+                                  
+                                        <button type="button" id="Hesapla" @*onclick="Hesapla()"*@ class="btn btn-dark btn-rounded btn-icon">
+                                            Hesapla
+                                        </button>
+                                    <button type="button" id="fiyatlandirma" onclick="Faturala()" class="btn btn-primary btn-rounded btn-icon" hidden>
+                                            Fiyatlandırmayı Bitir
+                                        </button>
+                                  
+                                </td>
+                                <td>
+                                  <span id="totalCount"></span>₺
+                                </td>
+                            </tr>
+                        }
+                    
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+@section Script{
+
+    <script>
+       
+        $('#Hesapla').on('click',function(){
+
+              var count= parseInt( $('#modelCount').val());
+           var total=0;
+
+           var denee=0;
+            for (var i = 1; i <=count;i++){
+
+                var adet = $('#adet_' + i).val();
+                console.log(adet+'adet');
+                var birim = $('#birimFiyat_' + i).val();
+                console.log(birim + 'birim');
+                var sonuc = (Number(adet) * Number(birim)/*.toPrecision(3)*/);
+                console.log(sonuc+"sonuc");
+                $('#sonuc_' + i).html(sonuc.toPrecision(5));
+                total+=sonuc;
+
+            }
+
+            $('#totalCount').html(total.toPrecision(5));
+          $('#fiyatlandirma').removeAttr('hidden');
+
+        })
+        //function Hesapla(){
+          
+        //}
+        function Faturala(){
+
+
+            swal({
+                title: "Fiyatlandırmayı Tamamla",
+                text: "Emin Misiniz?",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+                buttons: ["Hayır", "Evet"],
+            }).then((willDelete) => {
+                if (willDelete) {
+                    swal("", {
+                        icon: "success",
+                    });
+
+
+                    var shippingArray = [];
+                    var totalresult2 = $('#totalCount').text();
+                    var count = parseInt($('#modelCount').val());
+                    var productCountForDetails = "";
+                    for (var i = 1; i <= count; i++) {
+                        var productId = $('#productIdd_' + i).val();
+                        var shippingId = $('#shippingIdd_' + i).val();
+                        var colorId = $('#colorIdd_' + i).val();
+                        var price = $('#sonuc_' + i).text();
+                        var birim = $('#birimFiyat_' + i).val();
+                        var adet = $('#adet_' + i).val();
+                        var items = {
+                            ProductId: productId,
+                            ColorId: colorId,
+                            ShippingId: shippingId,
+                            Price: price,
+                            UnitePrice: birim,
+                            TotalPrice: totalresult2,
+                            ProductCount: adet,
+                        }
+
+                        shippingArray.push(items);
+                    }
+
+                    var jsonConvert = JSON.stringify(shippingArray);
+                    var url = '@Url.Action("CloseOrder","Temp")?tenantId=' + '@ViewBag.TenantId';
+                    $.ajax({
+                        url: url,
+                        traditional: true,
+                        datatype: "JSON",
+                        async: true,
+                        method: 'POST',
+                        data: { "body": jsonConvert },
+                        success: function () {
+                            window.location.href = '@Url.Action("ShippingFinishFirstView","Temp")';
+                        }
+                    });
+                }});
+
+
+
+          
+
+        }
+    </script>
+}

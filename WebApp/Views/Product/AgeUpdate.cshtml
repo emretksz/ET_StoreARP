@@ -1,0 +1,21 @@
+﻿@model Entities.Concrete.ProductAges
+@{
+    Layout = Layout;
+}
+<div class="col-md-6 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Yaş Güncelle</h4>
+            <p class="card-description">
+            </p>
+            <form class="forms-sample" asp-action="AgeUpdate" asp-controller="Product">
+                @Html.Hidden("Id",Model.Id)
+                <div class="form-group">
+                    <label for="exampleInputUsername1">Yaş Adı</label>
+                    <input type="text" class="form-control" id="Name" name="Name" value="@Model.Name" placeholder="Yaş Adı">
+                </div>
+                <button type="submit" class="btn btn-primary me-2">Güncelle</button>
+            </form>
+        </div>
+    </div>
+</div>

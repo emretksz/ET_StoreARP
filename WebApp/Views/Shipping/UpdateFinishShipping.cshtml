@@ -1,0 +1,142 @@
+﻿@model List<Entities.Dtos.ShippingProduct>
+@{
+    var spId = Model.FirstOrDefault().ShippingId;
+}
+<div class="col-lg-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <p class="card-description">
+              @*  <h4 style="margin:20px">Çıkarılacak miktar mevcut miktardan <b>fazlaysa</b> yeni girilen tutara göre <b>stoktan düşer</b> ve toplam <b>sipariş miktarı artar</b></h4>*@
+                <h4 style="margin:20px">*     Çıkarılacak miktar mevcut miktardan <b>az ise</b> girilen miktar stoğa eklenir ve toplam <b>sipariş miktarından düşer.</b><br /><br />** Çıkarılan ürün sayısı (adet*fiyat) toplam sipariş tutarından düşürülür!</h4>
+                <code>Sipariş Güncelleme</code>
+            </p>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Ürün Adı</th>
+                            <th>Barcode</th>
+                            <th>Ürün Kodu</th>
+                            <th>Renk Barcode</th>
+                            <th>Renk Adı</th>
+                            <th><b>Stok Miktarı</b></th>
+                            <th style ="width:45px">Mevcut Sipariş Miktar</th>
+                            <th style="width:35px">Çıkarılacak Miktar</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            int i = 0;
+                        }
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.ProductName</td>
+                                <td>@item.Barcode</td>
+                                <td>@item.ModelCode</td>
+                                <td>@item.RenkBarcode</td>
+                                <td>@item.ColorName</td>
+                                <td>@item.StockCount</td>
+                                <td>@item.Count</td>
+                                <td>
+                                    <input id="tempId_@i" value="@item.TempId" hidden/>
+                                    <input id="product_@i" value="@item.ProductId" hidden />
+                                    <input id="color_@i" value="@item.ColorId" hidden />
+                                    <input id="StockCount_@i" value="@item.StockCount" hidden />
+                                    <input type="number" id="miktar_@i" class="form-control" />
+                                </td>
+                            </tr>
+                            i++;
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <button style="float:right;margin-top:40px;margin-right:50px" onclick="Tamamla()" class="btn btn-success btn-bg">Güncelle</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function Tamamla(){
+
+        swal({
+            title: "Dikkat! Güncelleme İşlemi Yapmak İstiyor Musunuz?",
+            text: "Fatura Exceli ve Ürün Stokları Kalıcı Olarak Güncellenecek!",
+            icon: "warning",
+            buttons: ["İptal Et", "Devam Et"],
+        }).then((willDelete) => {
+            if (willDelete) {
+                var list = new Array();
+                for (var i = 0; i < '@Model.ToList().Count'; i++) {
+                    var product = $('#product_' + i).val();
+                    var tempId = $('#tempId_' + i).val();
+                    var color = $('#color_' + i).val();
+                    var miktar = $('#miktar_' + i).val();
+                    var stock = $('#StockCount_' + i).val();
+
+                   
+                    if (product != null && product != "" && color != null && color != "" && miktar != null && miktar != "" && product != NaN && color != NaN && miktar != NaN) {
+                        console.log("stock",parseInt(stock));
+                        console.log("miktar" , parseInt(miktar));
+                        //if (parseInt(stock) < parseInt(miktar)) {
+                        //    swal({
+                        //        title: "Dikkat! ",
+                        //        text: `Güncellemek istediğiniz miktarı: ${miktar} olan modelin adeti stok miktarınızdan FAZLA!`,
+                        //        icon: "warning",
+                        //        button: "Tamam",
+                        //    })
+                        //    return;
+                        //    break;
+                        //}else{
+                        //}
+                            list[i] = { "ShippingId": '@spId', "TempId": tempId, "ProductId": parseInt(product), "ColorId": parseInt(color), "Count": miktar };
+                      
+                    }
+                }
+                console.log("liste", list);
+                $.ajax({
+                    url: '@Url.Action("UpdateFinishShippingPost","Shipping")',
+                    type: "POST",
+                    data: JSON.stringify(list),
+                    contentType: 'application/json; charset=utf-8',
+                    dataType: 'json',
+                    success: function (data) {
+                        var stringTemplate = "";
+                        if (data == "false") {
+                            swal({
+                                title: "Dikkat",
+                                text: "Güncelleme İşlemi Yapılırken Bir Hata Oluştu",
+                                icon: "warning",
+                                button: "Tamam",
+                            });
+                            return;
+                        }
+                        else {
+                            swal({
+                                title: "Başarılı",
+                                text: "Güncelleme Başarılı",
+                                icon: "success",
+                                button: "Tamam",
+                            });
+                            setTimeout(() => {
+                                window.location.href = "@Url.Action("ShippingIndex","Shipping")";
+                            }, 1100)
+                        }
+
+                    },
+                    error: function (data) {
+
+                    }
+
+                })
+            }else{
+                swal({
+                    title: "İptal Edildi",
+                    icon: "info",
+                    button: "Tamam",
+                })
+            }         
+        })
+    }
+
+</script>

@@ -1,0 +1,107 @@
+﻿@model List<Entities.Dtos.ShippingConfirmListDto>
+
+<div class="card-body">
+    <h4 class="card-title">Sipariş Listesi</h4>
+    <div class="row">
+        <div class="col-10">
+
+        </div>
+        <div class="col-2">
+    <a class="btn btn-outline-primary" href="@Url.Action("ShippingIndex","Shipping")">Siparişi Tamamla</a>
+        </div>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                   
+                    <th>
+                      Model Kodu
+                    </th>
+                     <th>
+                      Model Açıklaması
+                    </th>
+                    <th>
+                         Adet
+                    </th>
+                    <th>
+                       Fiyat
+                    </th> 
+                    <th>
+                       Toplam Tutar
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    long adet = 0;
+                    decimal toplam = 0;
+                    int i = 1;
+                    int totalProduct = Model.Count - 1;
+                }
+                @foreach (var item in Model)
+                {
+                <tr>
+                   
+                    <td>
+                      @item.ProductCode
+                    </td>
+                    <td>
+                            @(item.ProductModel +" "+ item.ProductName + " " + item.Age + " " + item.Gender)
+                    </td>
+                        <td>
+                            @item.Amount
+                        </td>
+                        <td>
+                            @(item.Amount != 0 ? (item.Price != 0 ? item.Price / item.Amount:0) : 0);
+                        </td>
+                        <td>
+                            @item.Price
+                        </td>
+                        <td>
+                            <button class="btn btn-danger" onclick="DeleteShipping(@item.DetailsId)">Sil</button>
+                        </td>
+                          <td hidden>
+                        @(adet += item.Amount)
+                        @(toplam += item.Price)
+                        </td>
+                </tr>
+                 
+                i++;
+                }
+
+               
+                <tr>
+                <td> </td>
+                <td> </td>
+                <td> Toplam Adet : @adet </td>
+                <td> Toplam Tutar : @toplam</td>
+
+                </tr>
+             
+            </tbody>
+        </table>
+    </div>
+</div>
+
+   <script>
+    function DeleteShipping(spId){
+        var spIds = $('#shippingId').val();
+       $.ajax({
+            url: '@Url.Action("DeleteShippingDetails","Shipping")?spDetailsId=' + spId,
+            success:function(){
+                var x = true;
+                $.ajax({
+                    url: '@Url.Action("ShippingCofirmListReturn","Shipping")?reload=' + x + '&spId=' + spIds,
+                    //traditional: true,
+                    success: function (data) {
+                        $('#Siparisler').html(data);
+                    }
+                })
+            }
+       });
+    }
+
+
+ 
+  </script>

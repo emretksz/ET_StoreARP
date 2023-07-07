@@ -1,0 +1,21 @@
+﻿@model Entities.Concrete.Color
+
+@{
+    Layout = Layout;
+}
+<div class="col-md-6 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Renk Ekle</h4>
+            <p class="card-description">
+            </p>
+            <form class="forms-sample" asp-action="Create" asp-controller="Colors">
+                <div class="form-group">
+                    <label for="exampleInputUsername1">Renk Adı</label>
+                    <input type="text" class="form-control" id="ColorName" name="ColorName" placeholder="Renk Adı">
+                </div>
+                <button type="submit" class="btn btn-primary me-2">Ekle</button>
+            </form>
+        </div>
+    </div>
+</div>

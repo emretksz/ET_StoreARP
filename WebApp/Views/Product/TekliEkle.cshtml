@@ -1,0 +1,188 @@
+﻿@using X.PagedList.Mvc.Core;
+@using X.PagedList;
+@model IPagedList<Entities.Concrete.Product>
+@{
+    Layout = Layout; long ids = 0;
+
+}
+
+<div class="col-lg-7 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Tekli Ekle</h4>
+            @*<p class="card-description">
+            </p>*@
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Ürün Resmi</th>
+                            <th>Ürün Kodu</th>
+                            <th>Model Adı</th>
+                            <th>Cinsiyet</th>
+                            <th>Yaş</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            var q = 1;
+          
+                        }
+
+            
+                        @foreach (var item in Model)
+                        {
+
+                            <tr>
+                                <td> <img src="@item.ModelImageUrl" width="25%" /></td>
+                                <td>@item.ModelCode</td>
+                                <td>@item.ModelName</td>
+                                <td>@item.Gender</td>
+                                <td>@(item.ProductAges!=null?item.ProductAges.Name:"")</td>
+
+                                @*<td><label class="badge badge-danger">Pending</label></td>*@
+                                <td>
+                                    <div class="form-check form-check-primary">
+                                        <label class="form-check-label">
+                                            <input type="radio" @*onchange="RadioChange()"*@ class="form-check-input" name="productId" id="productId_@q" value="@item.Id">
+                                            Seçim Yap
+                                            <i class="input-helper"></i>
+                                        </label>
+                                    </div>
+                                </td>
+                            </tr>
+                            q++;
+                        }
+                        <tr>
+                            <td></td>
+                            <td></td>
+
+                            <td>
+                             @*   @{
+                                    var productCounts = ViewBag.Count;
+                                    if (productCounts >= 10)
+                                    {
+                                        productCounts = productCounts / 5;
+                                    }
+                                    else if (productCounts <= 5)
+                                    {
+                                        productCounts = 1;
+                                    }
+                                    else if (productCounts > 5 && productCounts <= 9)
+                                    {
+                                        productCounts = 2;
+                                    }
+                                }*@
+                                <div class="btn-group" role="group" aria-label="Basic example">
+                                   @* @for (int b = 0; b < productCounts; b++)
+                                    {
+                                        <a class="btn btn-outline-secondary" href="@Url.Action("TekliEkle","Product",new{page=b+1})">@(b + 1)</a>
+                                    }*@
+
+                                    @Html.PagedListPager((IPagedList)Model,page=>Url.Action("TekliEkle",new{page}),
+                                    new X.PagedList.Web.Common.PagedListRenderOptions {
+                                    DisplayLinkToIndividualPages = true,
+                                    DisplayPageCountAndCurrentLocation = false,
+                                    MaximumPageNumbersToDisplay = 10,
+                                    LiElementClasses = new string[] { "page-item" },
+                                    PageClasses = new string[] { "page-link" }})
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="col-lg-5 grid-margin stretch-card" id="colorParticalAdd">
+
+
+</div>
+
+
+
+
+
+@section script{
+    <script>
+        function TekliColorPartical(page) {
+            $.ajax({
+                url: '@Url.Action("TekliColorPartical","Product")?page=' + page,
+                success: function (data) {
+                    $('#colorParticalAdd').html(data);
+                }
+            });
+
+        }
+        $(document).ready(function(){
+            $.ajax({
+                url: '@Url.Action("TekliColorPartical","Product")',
+                success: function (data) {
+                    $('#colorParticalAdd').html(data);
+                }
+            });
+        })
+      </script>
+    <script>
+        function RadioChange() {
+            var productId = "";
+            var ele = document.getElementsByTagName('input');
+            for (i = 0; i < ele.length; i++) {
+
+                if (ele[i].type = "radio") {
+                    if (ele[i].checked)
+                        productId = ele[i].value
+                }
+            }
+            return productId;
+        }
+        function Calistir(e) {
+            var colorCountJs=$('#colorCount').val();
+            //alert(colorCountJs);
+            var productId = RadioChange();
+            //console.log($('#productId').val());
+            var ColorDto = [];
+            var colors = "";
+            var count = "";
+            for (var b = 1; b <= colorCountJs; b++) {
+                var gelenCount = $('#color_' + b).val();
+                var gelenRenk = $('#colorCount_' + b).val();
+                if (gelenCount != "" && gelenCount != 0 && gelenCount != null) {
+                    colors += $('#color_' + b).val() + ",";
+                    count += $('#colorCount_' + b).val() + ",";
+                    var g1 = $('#color_' + b).val() + ",";
+                    var g2 = $('#colorCount_' + b).val() + ",";
+
+                    var d = {
+                        Count: g2,
+                        ColorName: g1,
+                    }
+                    ColorDto.push(d);
+                }
+
+            }
+
+            var jsonConvert = JSON.stringify(ColorDto);
+          //  console.log(jsonConvert);
+
+            var url = '@Url.Action("Tekli","Product")?productId=' + productId;
+            $.ajax({
+                url: url,
+                traditional: true,
+                datatype: "JSON",
+                async: true,
+                method: 'POST',
+                data: { "body": jsonConvert },
+                success: function () {
+                    window.location.reload();
+                }
+            });
+
+
+        }
+    </script>
+}

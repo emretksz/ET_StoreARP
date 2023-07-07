@@ -1,0 +1,36 @@
+﻿@model List<Entities.Dtos.UserAndRoleDto>
+@{
+    ViewData["Title"] = "UserIndex";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="col-lg-2 grid-margin stretch-card"></div>
+<div class="col-lg-6 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Kullanıcılar</h4>
+            <span><a class="btn btn-primary" href="@Url.Action("Create","Account")">Kullanıcı Ekle</a></span>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Kullanıcı Adı</th>
+                            <th>Rolü</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.UserName</td>
+                                <td>@item.RoleName</td>
+                                <td><a class="btn btn-dark" href="@Url.Action("Update","Account",new{id=item.UserId})">Güncelle</a><a class="btn btn-danger" href="@Url.Action("Delete","Account",new{id=item.UserId})">Sil</a></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+

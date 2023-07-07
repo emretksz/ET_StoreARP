@@ -1,0 +1,553 @@
+﻿@*@using PagedList.Core.Mvc;*@
+@using X.PagedList.Mvc.Core;
+@using X.PagedList;
+@model IPagedList<Entities.Concrete.Product>
+@{
+    Layout = Layout;
+    long shippingId = ViewBag.ShippingId;
+
+}
+<div class="col-lg-6 grid-margin stretch-card" style="height:50%">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Ürün Seç</h4>
+            @*<p class="card-description">
+
+            </p>*@
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            @*<th>Ürün Resmi</th>*@
+                            <th>Ürün Kodu</th>
+                            <th>Model Adı</th>
+                            <th>Ürün Açıklaması</th>
+                            <th>Adet</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            var q = 1;
+                        }
+                        @foreach (var item in Model)
+                        {
+
+                            <tr>
+                                @*          <td> <img src="@item.ModelImageUrl" width="25%" /></td>*@
+                                <td>@item.ModelCode</td>
+                                <td>@item.ModelName</td>
+                                <td>@(item.ProductAges != null ? item.ProductAges.Name : "") / @item.Gender </td>
+                                <td>@item.ModelCount</td>
+
+                                @*<td><label class="badge badge-danger">Pending</label></td>*@
+                                <td>
+                                    <div class="form-check form-check-primary">
+                                        <label class="form-check-label">
+                                            <input type="radio" onchange="RadioChange(@item.ModelCount)" class="form-check-input" name="productId" id="productId_@q" value="@item.Id">
+                                            Seçim Yap
+                                            <i class="input-helper"></i>
+                                        </label>
+                                        @*                                         <input type="text" onchange="AmoutCount(@item.ModelCount)" class="form-check-input" name="modelCount" id="modelCount_@q" value="@item.ModelCount" hidden>
+                                    *@
+                                    </div>
+                                </td>
+                            </tr>
+                            q++;
+                        }
+                        <tr>
+                            <td></td>
+                            <td></td>
+
+                            <td>
+                                @*  @{
+                                var productCounts = ViewBag.PageCount;
+                                if (productCounts >= 10)
+                                {
+                                productCounts = productCounts / 5;
+                                }
+                                else if (productCounts <= 5)
+                                {
+                                productCounts = 1;
+                                }
+                                else if (productCounts > 5 && productCounts <= 9)
+                                {
+                                productCounts = 2;
+                                }
+                                }
+                                <div class="btn-group" role="group" aria-label="Basic example">
+                                @for (int b = 0; b < productCounts; b++)
+                                {
+                                <a class="btn btn-outline-secondary" href="@Url.Action("PrepareOrders","Temp",new{shippingId=shippingId,page=b+1})">@(b + 1)</a>
+                                }
+
+                                </div>*@
+                                <div class="btn-group" role="group" aria-label="Basic example">
+                                    @* @for (int b =0; b < productCounts; b++)
+                                    {
+                                    <a class="btn btn-outline-secondary" href="@Url.Action("AddShippingDetail","Shipping",new{page=b+1})">@(b+1)</a>
+                                    }*@
+
+                                    @Html.PagedListPager((IPagedList)Model,page=>Url.Action("PrepareOrders",new{page,shippingId=shippingId}),
+                                    new X.PagedList.Web.Common.PagedListRenderOptions {
+                                    DisplayLinkToIndividualPages = true,
+                                    DisplayPageCountAndCurrentLocation = false,
+                                    MaximumPageNumbersToDisplay = 10,
+                                    LiElementClasses = new string[] { "page-item" },
+                                    PageClasses = new string[] { "page-link" }})
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div id="ColorTable" class="col-lg-6 grid-margin stretch-card">
+</div>
+
+<div id="IsComplatedShipping">
+</div>
+
+
+@section Script{
+
+    <script>
+        var amounts = 0;
+
+        function RadioChange(amountCount) {
+            amounts = 0;
+            var productId = "";
+            var ele = document.getElementsByTagName('input');
+            for (i = 0; i < ele.length; i++) {
+
+                if (ele[i].type = "radio") {
+                    if (ele[i].checked)
+                        productId = ele[i].value
+                }
+            }
+
+
+            amounts = amountCount;
+            //var values = $('#modelCount_' + productId).val();
+            //alert(values);
+            ParticialReturn(productId);
+            return productId;
+        }
+
+
+        function Calistir(e) {
+
+
+            var hardCounter = 0;
+            //var lastCount = $('#colorCountScript').val();
+            var fullColorCount = 0;
+            //console.log("ColorCount",lastCount);
+            swal({
+                title: "Hazırlanan Siparişlere Ekle!",
+                text: "Emin Misiniz?",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+                buttons: ["Hayır", "Evet"],
+            }).then((willDelete) => {
+                if (willDelete) {
+                    swal("", {
+                        icon: "success",
+                    });
+
+                    var forInt = 300; //parseInt($('#colorCountScript').val())
+                    console.log(forInt);
+                    var valideCheck = false;
+                    for (var s = 1; s <= forInt; s++) {
+
+                        var stockCheck = parseInt($('#StockCount_' + s).val());
+                        var colorCheck = parseInt($('#colorCount_' + s).val());
+
+
+
+                        var deneme = colorCheck;
+                        //if (colorCheck>0&&stockCheck==0) {
+                        //    swal({
+                        //        title: "Stock Miktarı Aşıldı.!",
+                        //        icon: "warning",
+                        //    });
+                        //    return;
+                        //}
+                        if (colorCheck > stockCheck) {
+                            swal({
+                                title: "Stock Miktarı Aşıldı.!",
+                                icon: "warning",
+                            });
+                            return;
+                        }
+                        if (colorCheck > amounts) {
+                            swal({
+                                title: "Miktarı Aşıldı.!",
+                                icon: "warning",
+                            });
+                            return;
+                        }
+                        if (deneme.toString() == 'NaN') {
+                            hardCounter++;
+                            if (hardCounter == forInt) {
+                                //console.log("evet");
+                                valideCheck = true;
+                                swal({
+                                    title: "Stock Miktarı Aşıldı.!",
+                                    icon: "warning",
+                                });
+                                return;
+                            }
+                        }
+                        if (deneme.toString() != 'NaN') {
+                            fullColorCount = fullColorCount + Number(colorCheck);
+                        }
+
+                    }
+                    //console.log(fullColorCount);
+                    if (fullColorCount > amounts) {
+                        swal({
+                            title: "Sipariş Adeti ile Renk Miktarı Doğru Girilmedi !!, Miktar Aşıldı.!",
+                            icon: "warning",
+                        });
+                        return;
+                    }
+
+                    if (!valideCheck) {
+                        /****/
+
+                        var shippingId = '@shippingId';
+
+                        var productId = RadioChange();
+                        //console.log($('#productId').val());
+                        var ColorDto = [];
+                        var colors = "";
+                        var count = "";
+                        var lastCount = $('#colorCountScript').val();
+                        for (var b = 1; b <= 300; b++) {
+                            var gelenCount = $('#color_' + b).val();
+                            var gelenRenk = $('#colorCount_' + b).val();
+                            var colorCountJs = $('#colorCountForScript_' + b).val();
+                            var colorCountJs = $('#colorCountForScript_' + b).val();
+                                                      /*      console.log(gelenRenk)*/;
+                            var checkCount = parseInt(colorCountJs);
+                            var checkshippCount = parseInt(gelenRenk);
+
+                            if (checkshippCount > checkCount) {
+                                swal({
+                                    title: "Girilien miktar  sipari miktarından fazla, lütfen kontrol ediniz!",
+                                    icon: "warning",
+                                });
+                                valideCheck = true;
+                                return false;
+                            }
+                            //console.log("Count: " + gelenCount);
+                            //console.log("Renk: " + gelenRenk);
+                            if (gelenCount != "" && gelenCount != 0 && gelenCount != null && gelenRenk != 'on' && gelenRenk != 0) {
+                                colors += $('#color_' + b).val() + ",";
+                                count += $('#colorCount_' + b).val() + ",";
+                                var g1 = $('#color_' + b).val() + ",";
+                                var g2 = $('#colorCount_' + b).val() + ",";
+
+                                var barcode = "";
+                                var barcodum = $('#RenkBarcode_' + b).val();
+
+                                if (barcodum != null && barcodum != "" && barcodum != undefined && barcodum != 'undefined') {
+                                    barcode = $('#RenkBarcode_' + b).val();
+
+                                }
+                                var d = {
+                                    Count: g2,
+                                    ColorName: g1,
+                                    Barcode: barcode
+                                }
+                                ColorDto.push(d);
+                            }
+
+                        }
+                        //console.log(ColorDto.length);
+                        //console.log(ColorDto);
+                        console.log(ColorDto);
+
+                        if (!valideCheck && ColorDto.length > 0) {
+                            var jsonConvert = JSON.stringify(ColorDto);
+
+                            var url = '@Url.Action("AddShippingDetails2","Temp")?ShippingId=' + @shippingId + '&productId=' + productId;
+                            $.ajax({
+                                url: url,
+                                traditional: true,
+                                datatype: "JSON",
+                                //contentType: "application/json charset=utf-8",
+                                async: true,
+                                method: 'POST',
+                                data: { "bodyy": jsonConvert },
+                                success: function () {
+                                    var url = '@Url.Action("IsComplatedShipping","Temp")?ShippingId=' + @shippingId ;
+                                    $.ajax({
+                                        url: url,
+                                        traditional: true,
+                                        datatype: "JSON",
+                                        async: true,
+                                        method: 'POST',
+                                        data: {},
+                                        success: function (data) {
+                                            ParticialReturn(productId);
+                                            $('#IsComplatedShipping').html(data);
+                                            window.location.reload();
+
+                                        }
+                                    })
+                                }
+                            });
+                        }
+
+
+                        /**/
+                    }
+
+
+
+
+                }
+            }
+            );
+
+
+        }
+
+
+        function pageColor(x) {
+            var productId = "";
+
+            var ele = document.getElementsByTagName('input');
+            for (i = 0; i < ele.length; i++) {
+
+                if (ele[i].type = "radio") {
+                    if (ele[i].checked)
+                        productId = ele[i].value
+                }
+            }
+            // console.log(@shippingId);
+            var page = $('#page').val();
+            // console.log(page);
+            $.ajax({
+                url: '@Url.Action("ColorPartical","Temp")?shippingId=' + @shippingId + '&productId=' + productId + '&page=' + x,
+                data: {},
+                success: function (data) {
+                    $('#ColorTable').html(data);
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            var url = '@Url.Action("IsComplatedShipping","Temp")?ShippingId=' + @shippingId ;
+            $.ajax({
+                url: url,
+                traditional: true,
+                datatype: "JSON",
+                async: true,
+                method: 'POST',
+                data: {},
+                success: function (data) {
+                    $('#IsComplatedShipping').html(data);
+                    //window.location.reload();
+                }
+            })
+
+
+        })
+
+        function ParticialReturn(productId) {
+            //console.log(@shippingId);
+            $.ajax({
+                url: '@Url.Action("ColorPartical","Temp")?shippingId=' + @shippingId + '&productId=' + productId,
+                data: {},
+                success: function (data) {
+                    $('#ColorTable').html(data);
+                }
+            });
+
+
+        }
+
+
+        function Delete(productId, colorId, shippingId, count) {
+            $.ajax({
+                url: '@Url.Action("Delete","Temp")?shippingId=' + @shippingId + '&productId=' + productId + '&colorId=' + colorId + '&count=' + count,
+                data: {},
+                success: function () {
+                    //alert("tamam");
+                    var url = '@Url.Action("IsComplatedShipping","Temp")?ShippingId=' + @shippingId ;
+                    $.ajax({
+                        url: url,
+                        traditional: true,
+                        datatype: "JSON",
+                        async: true,
+                        method: 'POST',
+                        data: {},
+                        success: function (data) {
+                            $('#IsComplatedShipping').html(data);
+                            $.ajax({
+                                url: '@Url.Action("ColorPartical","Temp")?shippingId=' + @shippingId + '&productId=' + productId,
+                                data: {},
+                                success: function (data) {
+                                    $('#ColorTable').html(data);
+                                }
+                            });
+                            //window.location.reload();
+                        }
+                    })
+                }
+            });
+        }
+
+
+
+
+
+
+
+
+    </script>
+
+    <script>
+
+        function SiparisOnayi2() {
+            var shippinhForCount = parseInt($('#ShippingCountScript').val());
+
+            swal({
+                title: "Hazırlanan Siparişleri Tamamla!",
+                text: "Emin Misiniz?",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+                buttons: ["Hayır", "Evet"],
+            }).then((willDelete) => {
+                if (willDelete) {
+                    swal("", {
+                        icon: "success",
+                    });
+
+                    if (parseInt(shippinhForCount) == 0 || parseInt(shippinhForCount) == null) {
+                        return;
+                    }
+
+                    var shippingArray = [];
+                    //var sp50 = [];
+                    //var sp100 = [];
+                    //var sp150 = [];
+                    //var sp200 = [];
+                    //var sp250 = [];
+                    //var sp300 = [];
+                    //var sp350 = [];
+                    //var sp400 = [];
+                    //var sp450 = [];
+                    //var sp500 = [];
+                    //var sp550 = [];
+                    //var sp600 = [];
+                    //var sp650 = [];
+                    //var sp700 = [];
+                    //var sp750 = [];
+
+
+                    for (var a = 1; a <= shippinhForCount; a++) {
+                        console.log($('#productIdComplated_' + a));
+                        var productId = $('#productIdComplated_' + a).val();
+                        var colorName = $('#colorNameComplated_' + a).val();
+                        var colorCount = $('#colorCountComplated_' + a).val();
+                        var colorId = $('#colorIdComplated_' + a).val();
+                        var shippingId = $('#shippingId').val();
+
+                        console.log(parseInt(colorCount) + "colorcount" + "/" + parseInt(colorId) + "/" + parseInt(productId));
+                        if (parseInt(colorCount) > 0 && parseInt(colorId) > 0 && parseInt(productId) > 0) {
+                            var items = {
+                                ProductId: productId,
+                                ColorId: colorId,
+                                ShippigId: shippingId,
+                                Count: colorCount
+                            }
+                            shippingArray.push(items);
+
+                            //if (a <= 50) {
+                            //    sp50.push(items);
+                            //}
+                            //else if (a > 50 && a <= 100) {
+                            //    sp100.push(items);
+                            //}
+                            //else if (a > 100 && a <= 150) {
+                            //    sp150.push(items);
+                            //}
+                            //else if (a > 150 && a <= 200) {
+                            //    sp200.push(items);
+                            //}
+                            //else if (a > 200 && a <= 250) {
+                            //    sp250.push(items);
+                            //}
+                            //else if (a > 250 && a <= 300) {
+                            //    sp300.push(items);
+                            //}
+                            //else if (a > 300 && a <= 350) {
+                            //    sp350.push(items);
+                            //}
+                            //else if (a > 350 && a <= 400) {
+                            //    sp400.push(items);
+                            //}
+                            //else if (a > 400 && a <= 450) {
+                            //    sp450.push(items);
+                            //}
+                            //else if (a > 450 && a <= 500) {
+                            //    sp500.push(items);
+                            //}
+                            //else if (a > 500 && a <= 550) {
+                            //    sp550.push(items);
+                            //}
+                            //else if (a > 550 && a <= 600) {
+                            //    sp600.push(items);
+                            //}
+                            //else if (a > 600 && a <= 650) {
+                            //    sp650.push(items);
+                            //}
+                            //else if (a > 650 && a <= 700) {
+                            //    sp700.push(items);
+                            //}
+                            //else if (a > 700 && a <= 750) {
+                            //    sp750.push(items);
+                            //}
+
+
+                        }
+                    }
+                    console.log(shippingArray);
+
+
+
+
+                    var json = JSON.stringify(shippingArray)
+                    var url = '@Url.Action("ShippingFinishDeleteItem","Temp")';
+                    $.ajax({
+                        url: url,
+                        traditional: true,
+                        datatype: "JSON",
+                        method:'post',
+                        async: true,
+                        data: { "bodys": json },
+                        success: function () {
+                         
+                            window.location.href = '@Url.Action("Dowloand","Temp")';
+                            setTimeout(ShippingFirst, 3000);
+                        }
+                    });
+
+                }
+            });
+
+        }
+        function ShippingFirst() {
+            window.location.href = '@Url.Action("ShippingOrdersListForExcel","Temp")';
+        }
+    </script>
+}

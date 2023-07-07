@@ -1,0 +1,105 @@
+﻿@model List<Entities.Concrete.Product>
+
+<div class="card-body">
+    <h4 class="card-title">Ürün Listesi</h4>
+
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ÜRÜN</th>
+                </tr>
+
+            </thead>
+            <tbody>
+
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td><img src="@item.ModelImageUrl" width="25%" /></td>
+                        <td>@item.Barcode</td>
+                        <td hidden><input type="number" class="form-control" id="ProductId_@item.Id" name="ProductId" placeholder="ıd" value="@item.Id" /></td>
+                        <td><p style="width:35px!important">@item.ModelCode</p></td>
+                        <td><p style="width:15px!important">@item.Gender</p></td>
+                        <td>@item.ModelName</td>
+                        @if (item.ProductAges != null)
+                        {
+                            <td>@item.ProductAges.Name</td>
+                        }
+                        else
+                        {
+                            <td></td>
+                        }
+                        <td width="25%">Adet: <input style="width: 100px" type="number" class="form-control" id="Amount_@item.Id" name="Amount" placeholder="ADET" /></td>
+                        <td width="25%">Tutar: <input style="width: 100px" type="number" class="form-control" id="Price_@item.Id" name="Price" placeholder="TUTAR" /></td>
+                        <td><button class="btn btn-primary" onclick="AddShipping('@item.Id')">Ekle</button></td>
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+    </div>
+</div>
+@section Script{
+    }
+<script>
+
+    //swal({
+    //    title: "dikkat",
+    //    title: "Sipariş Miktarları ve Renk Miktarlarında Sorun Yaşanmaması için Lütfen Siparişe Ürün Renk Adetleri Girmeden Önce Düzenleme Yapınız!",
+    //    icon: "warning",
+    //}).then((data) => {
+    //    var spId = e.target.getAttribute('data-id');
+    //    window.location.href = "@Url.Action("UpdateAllShipping","Shipping")?shippingId=" + spId;
+    //})
+    function AddShipping(productId) {
+        var spId = $('#spId').val();
+        const format = (num, decimals) => num.toLocaleString('en-US', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        });
+        var amount;
+        var price;
+        var productIds = productId;
+        var shippinghId = spId;
+
+        amount = $('#Amount_' + productId).val().toString();
+        price = $('#Price_' + productId).val().toString();
+        var sonuc = parseFloat(price) * Number(amount);
+        var formatNumber = format(sonuc);
+        console.log(formatNumber);
+        //long shippingId, long productId, long count, decimal totalTutar
+        $.ajax({
+            url: '@Url.Action("AddShippingUpdateView","Shipping")?shippingId=' + shippinghId + '&productId=' + productId + '&count=' + amount + '&totalTutar=' + formatNumber,
+            success: function (data) {
+                if(data=="false"){
+                    swal({
+                        title: "Dikkat",
+                        title: "Siparilerde aynı ürün mevcut. Lütfen bu ürün için düzenleme ekranından işlem yapınız!",
+                        icon: "warning",
+                    });
+                    return;
+
+                }
+                if (data == "0") {
+                    swal({
+                        title: "Dikkat",
+                        title: "Adet veya Tutar girilmedi!",
+                        icon: "warning",
+                    });
+                    return;
+                }
+                else{
+                window.location.href = "@Url.Action("UpdateAllShipping","Shipping")?shippingId=" + shippinghId;
+
+                }
+            },
+            error: function (data) {
+            }
+
+        })
+
+    }
+
+</script>
+

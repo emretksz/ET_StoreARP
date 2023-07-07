@@ -1,0 +1,149 @@
+﻿@*@using PagedList;
+@using PagedList.Core.Mvc;*@
+@*@using PagedList.Mvc;*@
+@using X.PagedList;
+@using X.PagedList.Mvc.Core;
+
+@model IPagedList<Entities.Concrete.Color>
+
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Renk Ekle</h4>
+            @*<p class="card-description">
+
+            </p>*@
+            @*     <form id="ProductForm" >*@
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Renk</th>
+                            <th>Miktar</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            int i = 1;
+                        }
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                @* <td hidden><input class="form-group" type="text" id="color_@i" name="@item.ColorName"></td>*@
+                                @*   <td>@item.ColorName </td>
+                            <td><input class="typeahead tt-input" type="text" id="colorName_@i" name="@item.ColorName" value="@item.ColorName"></td>*@
+                                <td>@item.ColorName <input class="typeahead tt-input" type="text" id="color_@i" name="@item.ColorName" value="@item.Id" hidden></td>
+                                <td><input class="typeahead tt-input" type="text" id="colorCount_@i" name="@item.ColorName"></td>
+                                @*<td><label class="badge badge-danger">Pending</label></td>*@
+                            </tr>
+                            i++;
+                        }
+                        <tr>
+                        <td> <button class="btn btn-primary" onclick="Calistir()"> Gönder</button></td>
+                        </tr>
+                        <tr>
+                            <td></td>
+
+                            <td>
+                            @{
+                                var productCounts2 = ViewBag.ColorCount;
+                                if (productCounts2 >= 25 &&36 <= productCounts2)
+                                {
+                                    productCounts2 = 3;
+                                }
+                                else if (productCounts2 > 36 )
+                                {
+                                    productCounts2 = productCounts2 / 12;
+
+                                    }
+                                    else if (productCounts2 <= 12)
+                                    {
+                                        productCounts2 = 1;
+                                    }
+                                    else if (productCounts2 > 12 && productCounts2 <= 24)
+                                    {
+                                        productCounts2 = 2;
+                                    }
+                                }
+                                <div class="btn-group" role="group" aria-label="Basic example">
+                                    @for (int b = 0; b < productCounts2; b++)
+                                    {
+                                        <a class="btn btn-outline-secondary" onclick="ShippingColorPartical(@(b+1))" @*href="@Url.Action("AddShippingDetailsColorPartical","Shipping",new{color=b+1})"*@>@(b + 1)</a>
+                                    }
+
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            @*        </form>*@
+
+        </div>
+    </div>
+
+<script>
+    function ShippingColorPartical(page){
+
+        $.ajax({
+            url: '@Url.Action("AddShippingDetailsColorPartical","Shipping")?color='+page ,
+            success: function (data) {
+                $('#colorParticalAdd').html(data);
+            }
+        });
+
+
+    }
+
+    function Calistir(e) {
+
+         var shippingId = $('#shipping').val();
+         console.log(shippingId);
+         var productId = RadioChange();
+         //console.log($('#productId').val());
+         var ColorDto = [];
+         var colors = "";
+         var count = "";
+         for (var b = 1; b <= '@ViewBag.ColorCount'; b++) {
+             var gelenCount = $('#color_' + b).val();
+             var gelenRenk = $('#colorCount_' + b).val();
+             if (gelenCount != "" && gelenCount != 0 && gelenCount != null) {
+                 colors += $('#color_' + b).val() + ",";
+                 count += $('#colorCount_' + b).val() + ",";
+                 var g1 = $('#color_' + b).val() + ",";
+                 var g2 = $('#colorCount_' + b).val() + ",";
+
+                 var d = {
+                     Count: g2,
+                     ColorName: g1,
+                 }
+                 //var xx=[{
+                 //      "Count" :g1,
+                 //      "ColorName": g2
+                 //  }
+                 //]
+                 ColorDto.push(d);
+             }
+
+         }
+
+         var jsonConvert = JSON.stringify(ColorDto);
+        // console.log(jsonConvert);
+
+         var url = '@Url.Action("AddShippingDetails","Shipping")?ShippingId=' + shippingId + '&productId=' + productId;
+         $.ajax({
+             url:url,
+             traditional: true,
+             datatype: "JSON",
+             async:true,
+             method: 'POST',
+             data: { "body": jsonConvert },
+             success: function () {
+                 //alert("tqama");
+               //  console.log(shippingId);
+                 window.location.reload();
+            }
+         });
+
+
+     }
+</script>

@@ -1,0 +1,36 @@
+﻿@model List<Entities.Concrete.ProductAges>
+@{
+    ViewData["Title"] = "AgeIndex";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="col-lg-2 grid-margin stretch-card"></div>
+<div class="col-lg-6 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Renkler</h4>
+            <span><a class="btn btn-primary" href="@Url.Action("AgeAdd","Product")">Yaş Ekle</a></span>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Renk</th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.Name</td>
+                                <td></td>
+                                <td><a class="btn btn-dark" href="@Url.Action("AgeUpdate","Product",new{id=item.Id})">Güncelle</a><a class="btn btn-danger" href="@Url.Action("DeleteAge","Product",new{id=item.Id})">Sil</a></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+

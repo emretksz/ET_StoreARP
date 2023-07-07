@@ -1,0 +1,41 @@
+﻿@model Entities.Dtos.ShippingProduct
+<div class="col-md-2 grid-margin stretch-card"></div>
+<div class="col-md-6 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title"> Tekli Güncelle</h4>
+            <p class="card-description">
+       
+            </p>
+            <form asp-controller="Product" asp-action="TekliDuzenle" method="post">
+                <div class="form-group row">
+                    <div class="col-4">
+                        <label>Model Bilgisi</label>
+                        @Html.Hidden("TekliId",Model.TekliId)
+                        <div id="the-basics" class="row">
+                            <div>
+                                <span>Model: <b>@Model.ProductName</b></span>
+                            </div>
+                            <div>
+                                <span>Renk: <b>@Model.ColorName</b></span>
+                            </div>
+                   
+                      
+                        </div>
+                    </div>
+                    <div class="col-5">
+                        <label>Miktar</label>
+                        <div id="bloodhound">
+                            <input type="number" id="Count" class="form-control" name="Count" value="@Model.Count" />
+                        </div>
+                    </div>
+                </div>
+                 <center>
+                    <button type="submit" class="btn btn-success" style="margin:5px">Kaydet</button>
+                 </center>
+              
+            </form>
+        
+        </div>
+    </div>
+</div>

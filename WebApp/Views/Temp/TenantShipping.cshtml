@@ -1,0 +1,153 @@
+﻿@*@model List<Entities.Dtos.TempIndexDto>
+@{
+    Layout = Layout;
+}
+<div class="col-lg-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            @{
+                var tenantName = Model.FirstOrDefault(a=>a.TenantName!=null);
+            }
+            <h4 class="card-title">@tenantName.TenantName</h4>
+           
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Sipariş Adı</th>
+                            <th>Tarihi</th>
+                            <th>Sipariş Miktarı</th>
+                            <th></th>
+                    
+                        </tr>
+                    </thead>
+                    <tbody>
+                   @foreach (var item in Model@*.Shippings)
+                  {
+                            if (Convert.ToInt64(item.ShippingCount) > 0)
+                            {
+
+                                <tr>
+                                <td>@item.TenantName</td>
+                                <td>@item.RegisterDate</td>
+                                <td><label class="badge badge-success" style="color:black">@item.ShippingCount</label></td>
+                                <td>
+                                        <a class="btn btn-primary" href="@Url.Action("PrepareOrders","Temp",new{shippingId=item.Id})">Siparişi Hazırla</a>
+                                </td>
+                            </tr>
+                            }
+                  }
+                     
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>*@
+<div class="col-lg-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <center>
+
+                <h4 class="card-title">Siparişler</h4>
+            </center>
+            <div class="table-responsive">
+                <table id="example" class="table border" style="width:100%; border:double">
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css" />
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        var q = [];
+        var tenantId='@ViewBag.TenantId';
+        $.ajax({
+            url: '@Url.Action("TenantShippingJson","Temp")?tenantId=' + tenantId,
+            success: function (datam) {
+               // console.log(datam);
+                var qqq = JSON.parse(datam);
+                for (var i = 0; i < qqq.length; i++) {
+                    //var ssss = [
+                    //   ];
+                    q.push({ 'Id': qqq[i].Id, 'TenantName': qqq[i].TenantName, 'RegisterDate': qqq[i].RegisterDate, 'ShippingCount': qqq[i].ShippingCount});
+
+                }
+                //console.log(q);
+                //console.log([{ 'id': 20, 'main': 'hola', 'shrinked': false, 'clicks': 2000 }, { 'id': 21, 'main': 'hola', 'shrinked': false, 'clicks': 283000 }]);
+                // console.log(q);
+                $('#example').dataTable({
+                    "data": q,
+                    "autoWidth": true,
+                    "columns": [
+                        { "data": "Id" },
+                        { 'data': 'TenantName', 'title': 'Firma Adı' },
+                        {
+                            'data': 'RegisterDate', 'title': 'Sipariş Tarihi',
+                            'render': function (jsonDate) {
+                                var date = jsonDate.substr(0, 10)
+                                return date;
+
+                            }
+                        },
+                        { 'data': 'ShippingCount', 'title': 'Sipariş Miktarı' },
+                        //{ 'data': 'SiparisTutari', 'title': 'Sipariş Tutarı' },
+                        //{ 'data': 'shrinked' },
+                        //{ 'data': 'clicks' },
+                        {
+                            "data": "Id",
+                            "render": function (data, type, row, meta) {
+                               // console.log(data);
+                                var ids = data;
+                                return '<button class="btn btn-outline-secondary" data-id="' + data + '" onclick="GoToShipping(event)">Siparişe Git</button>'
+                                //return '<a class="btn btn-outline-secondary" onclick="GoToShippinh()"  href="@Url.Action("PrepareOrders","Temps")?shippingId=>Siparişe Git </a>'
+                                //return'<a class="btn btn-primary" href="/Temps/PrepareOrders?shippingId="'data'" ">Siparişi Hazırla</a>'+'Siparişi Gör'+'</button>'
+                            }
+                        }
+
+                    ],
+
+                    "language": {
+                        "search": "Arama Yap:",
+                        "paginate": {
+                            "first": "İlk",
+                            "last": "Son",
+                            "next": "İlerile",
+                            "previous": "Önceki"
+
+                        },
+                        "sInfo": "Şu Anki Sayfa {_START_} Toplam Sayfa {_TOTAL_}",// text you want show for info section
+
+
+                    },
+                })
+            }
+
+        });
+
+    });
+
+
+    function ExceleRaportla(e) {
+        var spId = e.target.getAttribute('data-id');
+        //window.location.href = '@Url.Action("GetShippingOrderListForExcel","Temp")?Id=' + spId;
+
+        var url = '@Url.Action("GetShippingOrderListForExcel","Temp")?Id=' + spId;
+        $.ajax({
+            url: url,
+            success: function () {
+                window.location.href = '@Url.Action("Dowloand","Temp")';
+                //setTimeout(ShippingFirst, 3000);
+            }
+        });
+
+    }
+    function GoToShipping(e) {
+        var spId = e.target.getAttribute('data-id');
+        window.location.href = '@Url.Action("PrepareOrders","Temp")?shippingId=' + spId;
+    }
+</script>

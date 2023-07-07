@@ -1,0 +1,58 @@
+﻿@{
+    Layout = Layout;
+}
+@model List<Entities.Concrete.Product>
+<div class="col-lg-11 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Renk Ekle</h4>
+
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Ürün Resmi</th>
+                            <th>Barkod</th>
+                            <th>Ürün Kodu</th>
+                            <th>Model Adı</th>
+                            <th>Cinsiyet</th>
+                            <th>Yaş</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+
+                            <tr>
+                                <td> <img src="@item.ModelImageUrl" width="25%" /></td>
+                                <td>@item.Barcode</td>
+                                <td>@item.ModelCode</td>
+                                <td>@item.ModelName</td>
+                                <td>@item.Gender</td>
+                                <td>@item.Age</td>
+                                @*<td><label class="badge badge-danger">Pending</label></td>*@
+                                <td>
+                                    <a class="btn btn-dark btn-rounded btn-fw" href="@Url.Action("ProductAndStockMagaza","Magaza",new{id=item.Id})">
+                                        Stoğa Git
+                                    </a>
+                                    @*<a class="btn btn-warning btn-rounded  btn-icon-text" href="@Url.Action("UpdateProduct","Product",new{id=item.Id})">
+                                        <i class="ti-reload btn-icon-prepend"></i>
+                                        Güncelle
+                                    </a>
+                                    <a class="btn btn-danger btn-rounded btn-icon" href="@Url.Action("Delete","Product",new{id=item.Id})">
+                                        <i class="mdi mdi-delete-forever"></i>
+
+                                    </a>*@
+                                </td>
+                            </tr>
+                        }
+
+
+
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

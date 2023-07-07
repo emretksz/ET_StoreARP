@@ -1,0 +1,136 @@
+﻿@model Entities.Dtos.ProductColorDto
+@{
+    Layout = Layout;
+    long productId = ViewBag.ProductId;
+}
+
+
+@Html.Hidden("ProductId",productId)
+<div class="col-lg-6 grid-margin stretch-card" style="height:50%">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Renk Ekle</h4>
+            @*<p class="card-description">
+
+            </p>*@
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Ürün Resmi</th>
+                            <th>Ürün Kodu</th>
+                            <th>Model Adı</th>
+                            <th>Cinsiyet</th>
+                            <th>Yaş</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td> <img src="@Model.SingleProduct.ModelImageUrl" width="80px" height0="80px" /></td>
+                            <td>@Model.SingleProduct.ModelCode</td>
+                            <td>@Model.SingleProduct.ModelName</td>
+                            <td>@Model.SingleProduct.ProductAges.Name</td>
+                            <td>@Model.SingleProduct.Gender</td>
+
+                            @*<td><label class="badge badge-danger">Pending</label></td>*@
+                   
+                  @*          <td><label class="badge badge-danger"> <button class="badge badge-danger" onclick="Calistir()"> Gönder</button></label></td>*@
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="col-lg-6 grid-margin stretch-card" id="colorList" >
+
+
+</div>
+
+@section Scripts{
+
+
+    <script>
+        $.ajax({
+            url: '@Url.Action("ProductColorList","Product")',
+            success: function (data) {
+                $('#colorList').html(data);
+            }
+        });
+
+        function ProductColorPartical(page) {
+            $.ajax({
+                url: '@Url.Action("ProductColorList","Product")?page=' + page,
+                success: function (data) {
+                    $('#colorList').html(data);
+                }
+            });
+
+
+        }
+        </script>
+
+    <script>
+
+
+        function Calistir() {
+            var productId = $('#ProductId').val();
+            var sdate = $('#fabrikaDate').val();
+            var ColorDto = [];
+            var colors = "";
+            var count = "";
+            for (var b = 1; b <= '@ViewBag.ColorCount'; b++) {
+                var gelenCount = $('#color_' + b).val();
+                var gelenRenk = $('#colorCount_' + b).val();
+                var gelenBarcode = $('#barcode_' + b).val();
+                if (gelenCount != "" && gelenCount != 0 && gelenCount != null) {
+                    colors += $('#color_' + b).val() + ",";
+                    count += $('#colorCount_' + b).val() + ",";
+                    var g1 = $('#color_' + b).val() + ",";
+                    var g2 = $('#colorCount_' + b).val() + ",";
+                    var barcode ="";
+                    if (gelenBarcode!=null&&gelenBarcode!="") {
+                        barcode=gelenBarcode;
+                    }
+
+                    var d = {
+                        Count: g2,
+                        ColorName: g1,
+                        Barcode: barcode,
+                    }
+
+                    //var xx=[{
+                    //      "Count" :g1,
+                    //      "ColorName": g2
+                    //  }
+                    //]
+                    ColorDto.push(d);
+                }
+
+            }
+            console.log(ColorDto);
+       
+            var jsonConvert = JSON.stringify(ColorDto);
+            //console.log(encodeURI(jsonConvert));
+            $.ajax({
+                url: '@Url.Action("AddColorForProduct","Product")?productId='+@Model.SingleProduct.Id+'&date='+sdate,
+                traditional: true,
+               // contentType: "application/json charset=utf-8",
+                datatype: "JSON",
+                method: 'POST',
+                data: { "body": jsonConvert },
+                success: function () {
+           
+                    window.location.href = "/Product/ProductIndex";
+                }
+            });
+  
+        }
+    </script>
+
+
+
+}

@@ -1,0 +1,72 @@
+﻿@using X.PagedList.Mvc.Core;
+@using X.PagedList;
+@model  List<Entities.Dtos.ShippingProduct>
+@{
+    long ids = 0;
+    if (ViewBag.Ids != null)
+    {
+        ids = Convert.ToInt64(ViewBag.Ids);
+    }
+}
+<div class="card">
+    <div class="card-body">
+        <h4 class="card-title">Eklenen Ürünler</h4>
+        <p class="card-description">
+            <div class="col-12 row">
+
+                <div class="col-10" style="width:80%">
+                </div>
+                <div class="col-2" style="width:20%">
+                    <button onclick="SiparisOnayi(@ids)" type="button" class="btn btn-secondary btn-rounded btn-fw">Siparişi Kaydet</button>
+                </div>
+            </div>
+
+        </p>
+        <div class="table-responsive pt-3">
+            <table class="table table-dark">
+                <thead>
+                    <tr>
+                        @*     <th>Ürün Resmi</th>*@
+                        <th>Model Adı</th>
+                        <th>Renk</th>
+                        <th>Miktar</th>
+                        <th></th>
+                    </tr>
+
+                </thead>
+                <tbody>
+                    @if (Model != null)
+                    {
+
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.Hidden("productIdUpdate",item.ProductName)
+                                    @item.ProductName
+                                </td>
+                                <td>
+                                    @Html.Hidden("colorId",item.ColorId)
+                                    @item.ColorName
+                                </td>
+                                <td>
+                                    @Html.Hidden("count",item.Count)
+                                    @item.Count
+                                </td>
+                                <td>
+                                    <button type="button" onclick=" gonder('@item.ProductId','@item.ProductName','@item.ColorId','@item.ColorName','@ids')" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                        Düzenle
+                                    </button>
+                                    <button type="button" class="btn btn-warning btn-xs legitRipple pull-right" onclick="Delete('@item.ProductId','@item.ColorId','@ids')" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                        Sil
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

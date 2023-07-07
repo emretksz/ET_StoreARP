@@ -1,0 +1,51 @@
+﻿@model Entities.Concrete.Temp
+<div class="col-md-3 grid-margin stretch-card">
+</div>
+
+<div class="col-md-5 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">sİPAR</h4>
+            @* <p class="card-description">
+
+            </p>
+            *@
+
+
+            @* shipping ıd var on basılacak güğncelen falan iş var  burada*@
+
+            <form class="forms-sample" asp-action="Update" asp-controller="Temp" asp-area="Temp">
+
+                <div class="form-group">
+                    <label for="exampleInputUsername1">Model Kodu</label>
+                    <input type="text" class="form-control" id="ModelCode" name="ModelCode" placeholder="Model Kodu">
+                </div>
+                <div class="form-group">
+                    <label for="exampleInputEmail1">Model Adı</label>
+                    <input type="text" class="form-control" id="ModelName" name="ModelName" placeholder="Model Adı">
+                </div>
+                <div class="form-group">
+                    <label for="exampleInputPassword1">Cinsiyet</label>
+                    <input type="text" class="form-control" id="Gender" name="Gender" placeholder="Cinsiyet">
+                </div>
+                <div class="form-group">
+                    <label for="exampleInputConfirmPassword1">Yaş</label>
+                    <input type="text" class="form-control" id="Age" name="Age" placeholder="Yaş">
+                </div>
+                <div class="form-group">
+                    <label for="exampleInputConfirmPassword1">Kayıt Tarihi</label>
+                    <input type="datetime" class="form-control" id="RegisterDate" name="RegisterDate" placeholder="Kayıt Tarihi">
+                </div>
+                <div class="form-check form-check-flat form-check-primary">
+                    <label class="form-check-label">
+                        <input type="checkbox" class="form-check-input" id="IsActive" name="IsActive">
+                        Ürün Listesinde Göster
+                        <i class="input-helper"></i>
+                    </label>
+                </div>
+                <button type="submit" class="btn btn-primary">Gönder</button>
+                @*<button class="btn btn-light">Cancel</button>*@
+            </form>
+        </div>
+    </div>
+</div>

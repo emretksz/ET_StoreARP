@@ -1,0 +1,255 @@
+﻿
+@model Entities.Dtos.ProductColorDto
+@{
+    Layout = Layout;
+    ViewData["Title"] = "Home Page";
+}
+@{
+    bool stock1 = false;
+    if (ViewBag.StockAdd != null)
+    {
+        stock1 = true;
+    }
+}
+
+
+<style>
+    body {
+        background: #eee;
+    }
+
+    .card {
+        box-shadow: 0 20px 27px 0 rgb(0 0 0 / 5%);
+    }
+
+    .card {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+        word-wrap: break-word;
+        background-color: #fff;
+        background-clip: border-box;
+        border: 0 solid rgba(0,0,0,.125);
+        border-radius: 1rem;
+    }
+
+    .card-body {
+        -webkit-box-flex: 1;
+        -ms-flex: 1 1 auto;
+        flex: 1 1 auto;
+        padding: 1.5rem 1.5rem;
+    }
+
+    .avatar-text {
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-pack: center;
+        -ms-flex-pack: center;
+        justify-content: center;
+        -webkit-box-align: center;
+        -ms-flex-align: center;
+        align-items: center;
+        background: #000;
+        color: #fff;
+        font-weight: 700;
+    }
+
+    .avatar {
+        width: 3rem;
+        height: 3rem;
+    }
+
+    .rounded-3 {
+        border-radius: 0.5rem !important;
+    }
+
+    .mb-2 {
+        margin-bottom: 0.5rem !important;
+    }
+
+    .me-4 {
+        margin-right: 1.5rem !important;
+    }
+</style>
+@*
+@if (Model.Products.Count > 0)
+{
+    @foreach (var item in Model.Products)
+    {
+         
+        <div class="container">
+
+            <div class="row">
+                <div>
+                    <span>@item.ModelCode ***</span>
+                    <span>@item.ModelName ***</span>
+                    <span>@item.Gender ***</span>
+                    <span>@item.Age **</span>
+                    @if (item.Stock!=null)
+                    {
+                        <span>@item.Stock.StockCount **</span>
+                    }
+                
+                    <span>@item.ModelColor ** </span>
+                    <span>@item.RegisterDate **</span>
+                </div>
+                <div>
+                    <form asp-action="ProductStockAdd" asp-controller="Home">
+                        <div class="form-row">
+                            @Html.Hidden("ProductId",item.Id)
+                              <div class="form-group col-md-6">
+                                <input type="text" class="form-control" id="StockCount" name="StockCount" placeholder="StockCount">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Ekle</button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+      
+
+    }
+}*@
+<div class="col-md-3 grid-margin stretch-card">
+   
+</div>
+
+<div class="col-md-5 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Ürün Ekle</h4>
+           @* <p class="card-description">
+             
+            </p>*@
+            <form class="forms-sample" asp-action="ProductAdd" asp-controller="Product" enctype="multipart/form-data">
+
+                <div class="form-group">
+                    <label for="exampleInputUsername1">Barkod</label>
+                    <input type="text" class="form-control" id="Barcode" name="Barcode" placeholder="Barcode" required>
+                </div>
+                <div class="form-group">
+                    <label for="exampleInputUsername1">Model Kodu</label>
+                    <input type="text" class="form-control" id="ModelCode" name="ModelCode" placeholder="Model Kodu"required>
+                </div>
+                <div class="form-group">
+                    <label for="exampleInputEmail1">Model Adı</label>
+                    <input type="text" class="form-control" id="ModelName" name="ModelName" placeholder="Model Adı" required>
+                </div>
+                <div class="form-group">
+                    <label for="exampleInputPassword1">Cinsiyet</label>
+@*                    <input type="text" class="form-control" id="Gender" name="Gender" placeholder="Cinsiyet" required>
+*@                    @Html.DropDownList("Gender", (SelectList)ViewBag.Gender)
+                </div>
+                <div class="form-group">
+                    <label for="exampleInputConfirmPassword1">Yaş</label>
+@*                    <input type="text" class="form-control" id="Age" name="Age" placeholder="Yaş" required>
+                    *@ @Html.DropDownList("ProductAgesId", (SelectList)ViewBag.productAge)
+                </div>        
+                <div class="form-group">
+                    <label for="exampleInputConfirmPassword1">Kayıt Tarihi</label>
+                    <input type="date" class="form-control" id="RegisterDate" name="RegisterDate" placeholder="Kayıt Tarihi" required>
+                </div>  
+                <div class="form-group">
+                    <label for="exampleInputConfirmPassword1">Ürün Resmi</label>
+                    <input type="file" name="file" value="" @*required*@ />
+                </div>
+
+
+                <div class="form-check form-check-flat form-check-primary">
+                    <label class="form-check-label">
+                        <input type="checkbox" class="form-check-input" id="IsActive" name="IsActive" required>
+                        Ürün Listesinde Göster
+                        <i class="input-helper"></i>
+                    </label>
+                </div>
+                <button type="submit" class="btn btn-primary">Gönder</button>
+                @*<button class="btn btn-light">Cancel</button>*@
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+@*<div class="container">
+    <a href="@Url.Action("Color","Home")"> Renk Ekle</a>
+    <button href="@Url.Action("Color","Home")">Renk Ekle</button>
+</div>
+<button onclick="Calistir()"> Gönder</button>
+@section Script{
+<script>
+   function Calistir()
+   {
+            var ColorDto = [];
+        var colors = "";
+        var count = "";
+        for (var b = 1; b <='@Model.ProductColor.Count'; b++) {
+                var gelenCount=$('#color_' + b).val();
+                var gelenRenk = $('#colorName_' + b).val();
+                if (gelenCount != "" && gelenCount != 0 && gelenCount!=null ) {
+                    colors += $('#color_' + b).val() + ",";
+                    count += $('#colorName_' + b).val() + ",";
+                    var g1 = $('#color_' + b).val() + ",";
+                    var g2 = $('#colorName_' + b).val() + ",";
+
+                  var d={
+                        Count: g1,
+                        ColorName:g2,
+                  }
+                  //var xx=[{
+                  //      "Count" :g1,
+                  //      "ColorName": g2
+                  //  }
+                  //]
+                    ColorDto.push(xx);
+            }
+          
+        }
+            var ModelCode = $('#ModelCode').val();
+            var ModelName = $('#ModelName').val();
+            var Gender = $('#Gender').val(); 
+            var RegisterDate = $('#RegisterDate').val();
+            var Age = $('#Age').val();
+            var IsActive = $('#IsActive').val();
+
+            var CreateProductDto={
+                "ModelCode"  : ModelCode,
+                "ModelName" : ModelName,
+                "Gender" : Gender,
+                "RegisterDate" : RegisterDate,
+                "Age"  :Age,
+                "IsActive"  :IsActive,
+                ColorDto: ColorDto
+                    };
+                 console.log(ColorDto);
+
+              $.ajax({
+                url: '@Url.Action("SessionList","Home")',
+                traditional:true,
+                //datatype: "JSON",
+                data: ColorDto,
+                success:function(){
+                    alert("ok");
+                }
+        });
+        $.ajax({
+                url: '@Url.Action("ProductAdd","Home")',
+                traditional:true,
+                //datatype: "JSON",
+                data: CreateProductDto,
+                success:function(){
+                    alert("ok");
+                }
+        });
+            console.log(dizi);
+            console.log(item);
+   }      
+</script>
+
+
+
+}*@
+

@@ -1,0 +1,245 @@
+﻿@*@using X.PagedList;
+@using X.PagedList.Mvc.Core;*@
+@model List<Entities.Dtos.ShippingProduct>
+@{
+    Layout = Layout;
+}
+@*<div class="col-lg-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Tekliler</h4>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Model Kodu</th>
+                            <th>Model Adı</th>
+                            <th>Rengi</th>
+                            <th>Adet</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        if (Model != null)
+                        {
+                            if (Model.Count > 0)
+                            {
+                                foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>@item.ModelCode</td>
+                                        <td>@item.ProductName</td>
+                                        <td>@item.ColorName</td>
+                                        <td>@item.Count</td>
+                                        <td><a class="btn btn-success" href="@Url.Action("TekliDuzenle","Product",new{tekliId=item.TekliId})" style="margin:5px">Düzenle</a><a class="btn btn-danger" href="@Url.Action("DeleteTekli","Product",new{tekliId=item.TekliId})">Sil</a> </td>
+                                    </tr>
+                                }
+                            }
+                        }
+                        <tr>
+                            <td>
+                                <div class="btn-group" role="group" aria-label="Basic example">
+                                   
+
+                                   @Html.PagedListPager((IPagedList)Model,page=>Url.Action("Tekliler",new{page}),
+                                    new X.PagedList.Web.Common.PagedListRenderOptions {
+                                    DisplayLinkToIndividualPages = true,
+                                    DisplayPageCountAndCurrentLocation = false,
+                                    MaximumPageNumbersToDisplay = 10,
+                                    LiElementClasses = new string[] { "page-item" },
+                                    PageClasses = new string[] { "page-link" }})
+                                </div>
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>*@
+
+<div class="col-lg-12 grid-margin stretch-card" >
+    <div class="card">
+        <div class="card-body">
+            <center>
+
+            <h4 class="card-title">Firmalar</h4>
+            </center>
+            <div class="table-responsive">
+                <table id="example" class="table border" style="width:100%; border:double">
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css" />
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
+
+@section Script{
+
+    <script>
+        function getir() {
+
+        }
+
+        $(document).ready(function () {
+            var q = [];
+            $.ajax({
+                url: '@Url.Action("DenemeJson","Product")',
+                success: function (datam) {
+                    var qqq = JSON.parse(datam);
+                    // console.log(qqq);
+                    for (var i = 0; i < qqq.length; i++) {
+                        //var ssss = [
+                        //   ];
+                        q.push({ 'Id': qqq[i].TekliId, 'ModelCode': qqq[i].ModelCode, 'ModelAdi': qqq[i].ProductName, 'Cinsiyet': qqq[i].Gender,'Yas': qqq[i].Age,'Renk': qqq[i].ColorName, 'Adet': qqq[i].Count });
+
+                    }
+                    //console.log([{ 'id': 20, 'main': 'hola', 'shrinked': false, 'clicks': 2000 }, { 'id': 21, 'main': 'hola', 'shrinked': false, 'clicks': 283000 }]);
+                    // console.log(q);
+                    $('#example').dataTable({
+                        "data": q,
+                        "autoWidth": true,
+                        "columns": [
+                            { "data": "Id" },
+                            { 'data': 'ModelCode', 'title': 'Model Kodu' },
+                            { 'data': 'ModelAdi', 'title': 'Model Adı' },
+                            { 'data': 'Cinsiyet', 'title': 'Cinsiyet' },
+                            { 'data': 'Yas', 'title': 'Yaş' },
+                            { 'data': 'Renk', 'title': 'Renk' },
+                            { 'data': 'Adet', 'title': 'Adet' },
+                            {
+                                "data": "Id",
+                                "render": function (data, type, row, meta) {
+
+                                    return '<a class="btn btn-lg btn-success" onclick="Duzenle(event)" data-id="' + data + '" style = "margin:5px" > Düzenle </a><a class="btn btn-danger" " style = "margin:5px" onclick="DeleteTekli(event)"data-id="' + data + '">Sil</a>';
+
+                                    //'<button class="btn btn-outline-secondary" data-id="' + data + '" onclick="ExceleRaportla(event)">Excele Raporla </button>'
+                                }
+                            }
+
+                        ],
+
+                        "language": {
+                            "search": "Arama Yap:",
+                            "paginate": {
+                                "first": "İlk",
+                                "last": "Son",
+                                "next": "İlerile",
+                                "previous": "Önceki"
+
+                            },
+                            "sInfo": "",// text you want show for info section
+
+
+                        },
+                    })
+                }
+
+            });
+
+        });
+
+
+        function Duzenle(e){
+            var spId = e.target.getAttribute('data-id');
+          window.location.href = '@Url.Action("TekliDuzenle","Product")?tekliId='+spId;
+        }
+        function DeleteTekli(e) {
+            var spId = e.target.getAttribute('data-id');
+            window.location.href = '@Url.Action("DeleteTekli","Product")?tekliId='+spId;
+        }
+
+
+
+                //$(document).ready(function () {
+                //    var q = [];
+                //    $.ajax({
+                //        url: '/Home/GetProductListJson',
+                //        success: function (datam) {
+                //            var qqq = JSON.parse(datam);
+
+                //            for (var i = 0; i < qqq.length; i++) {
+                //                var ssss = [qqq[i].ModelCode, qqq[i].ModelName];
+                //                q.push(ssss);
+
+                //            }
+                //            $('#example').DataTable({
+                //                data: q,
+                //                columns: [
+                //                    { title: 'Name' },
+                //                    { title: 'Position' },
+                //                    { title: '' },
+                //                    //{ title: 'Extn.' },
+                //                    //{ title: 'Start date' },
+                //                    //{ title: 'Salary' },
+                //                ],
+                //                columnDefs: [
+                //                    {
+                //                        targets: -1,
+                //                        data: null,
+                //                        defaultContent: '<button>Click!</button>',
+                //                    },
+                //                ],
+                //            });
+                //        }
+
+                //    });
+
+                //});
+                //      $('#example tbody').on('click', 'button', function () {
+                //    var data = table.row($(this).parents('tr')).data();
+                //    alert(data[0] + "'s salary is: " + data[5]);
+                //});
+
+                //$(document).ready(function () {
+                //   var q = [];
+                //     $.ajax({
+                //        url: '/Home/GetProductListJson',
+                //        success: function (datam) {
+                //         var qqq = JSON.parse(datam);
+                //            for (var i = 0; i < qqq.length; i++) {
+                //                var ssss = [qqq[i].ModelCode, qqq[i].ModelName];
+                //                q.push(ssss);
+                //            }
+
+                //               var table = $('#example').DataTable({
+                //        ajax: q,
+                //        columnDefs: [
+                //            {
+                //                targets: -1,
+                //                data: null,
+                //                defaultContent: '<button>Click!</button>',
+                //            },
+                //        ],
+                //    });
+                //        }});
+
+
+
+                //    $('#example tbody').on('click', 'button', function () {
+                //        var data = table.row($(this).parents('tr')).data();
+                //        alert(data[0] + "'s salary is: " + data[5]);
+                //    });
+                //});
+
+                //var table = $('#example').DataTable({
+                //    ajax: '',
+                //    columnDefs: [
+                //        {
+                //            targets: -1,
+                //            data: null,
+                //            defaultContent: '<button>Click!</button>',
+                //        },
+                //    ],
+                //});
+
+                //$('#example tbody').on('click', 'button', function () {
+                //    var data = table.row($(this).parents('tr')).data();
+                //    alert(data[0] + "'s salary is: " + data[5]);
+                //});
+    </script>
+
+}

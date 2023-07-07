@@ -1,0 +1,29 @@
+﻿@{
+    Layout = Layout;
+}
+
+
+<div class="card  m-2" style="width:40%;background-color:gainsboro">
+    <div class="card-body">
+        <div class="col-sm-6 col-md-4 col-lg-3">
+        </div>
+         
+        <h5 class="card-title"> Stok Kontrolü/ Güncelleme</h5>
+        <p class="card-text">Mağaza stoğunu kontrol edebilirsiniz</p>
+        <a href="@Url.Action("MagazaStock","Magaza")" class="btn btn-primary">Stoğa Git</a>
+    </div>
+</div>
+<div class="card  m-2" style="width:50%">
+    <div class="card-body">
+        <h5 class="card-title">Sipariş oluştur</h5>
+        <p class="card-text">Magaza siparişi oluştur.</p>
+        <a href="@Url.Action("Create","Shipping")" class="btn btn-primary">Sipariş Oluştur</a>
+    </div>
+</div>
+<div class="card w-50 m-2">
+    <div class="card-body">
+        <h5 class="card-title">Fiyatlandır ve Fatura al</h5>
+        <p class="card-text">Tamamlanan siparişleri fiyatlandırın ve faturanızı alın</p>
+        <a href="@Url.Action("ShippingFinishFirstView","Temp")" class="btn btn-primary">Fiyatlandır</a>
+    </div>
+</div>

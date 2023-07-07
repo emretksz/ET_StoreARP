@@ -1,0 +1,179 @@
+﻿@model List<Entities.Concrete.Product>
+
+<div class="card-body">
+    <h4 class="card-title">Ürün Listesi</h4>
+
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ÜRÜN</th>
+                </tr>
+
+            </thead>
+            @* hidden shipping ıd gelecek!!!!!!!!!!*@
+            <tbody>
+                @{
+                    int i = 1;
+                }
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td><img src="@item.ModelImageUrl" width="25%" /></td>
+                        @*  <td hidden><input id="productId" value="@item.Id"  /></td>*@
+                        <td>@item.Barcode</td>
+                        <td hidden><input type="number" class="form-control" id="ProductId_@i" name="ProductId" placeholder="ıd" value="@item.Id" /></td>
+                        <td><p style="width:35px!important">@item.ModelCode</p></td>
+                        <td><p style="width:15px!important">@item.Gender</p></td>
+                        <td>@item.ModelName</td>
+                        @if (item.ProductAges != null)
+                        {
+                            <td>@item.ProductAges.Name</td>
+                        }
+                        else
+                        {
+                            <td></td>
+                        }
+                        <td width="25%">Adet: <input  style="width: 100px" type="number" class="form-control" id="Amount_@i" name="Amount" placeholder="ADET" /></td>
+                        <td width="25%">Tutar: <input style="width: 100px" type="number" class="form-control" id="Price_@i" name="Price" placeholder="TUTAR" /></td>
+                        <td><button class="btn btn-primary" onclick="AddShipping('@item.Id')">Ekle</button></td>
+                    </tr>
+                    i++;
+                }
+
+            </tbody>
+        </table>
+    </div>
+</div>
+@section Script{
+    }
+<script>
+        function ClearHtml() {
+        console.log(sayacım +"sayaç");
+        for (var b = 0; b < sayacım; b++) {
+            //console.log((b + 1));
+            //console.log($('#Amount_' + (b + 1)).val().toString());
+            //$('#Amount_' + (b + 1)).html() ;
+            //$('#Price_' + (b + 1)).html();
+            document.getElementById('Amount_' + (b + 1)).value = "";
+            document.getElementById('Price_' + (b + 1)).value = "";
+        }
+    }
+    var sayacım = 0;
+    function AddShipping(productId) {
+
+        const format = (num, decimals) => num.toLocaleString('en-US', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        });
+
+
+        sayacım = @Model.Count;
+        var stringArray = new Array();
+        //stringArray[0] = "item1";
+        //stringArray[1] = "item2";
+        //stringArray[2] = "item3";
+
+        var convertShippngDto = [];
+        var data = new Array();
+        var things = {};
+        var amount; /*= $('#Amount').val();*/
+        var price; /*= $('#Price').val();*/
+        var productIds = productId;
+        var shippinghId = shippingId.value;
+        var modelCounter = Number(@Model.Count);
+        var forSayac= modelCounter;
+        console.log(forSayac);
+        for (var i = 0; i < forSayac; i++) {
+
+ 
+            amount = $('#Amount_' + (i + 1)).val().toString();
+            price = $('#Price_' + (i + 1)).val().toString();
+            productId = $('#ProductId_' + (i + 1)).val().toString();
+            //var items = {
+            //    ShippinbgId: shippinghId,
+            //    ProductId: productIds,
+            //    Amount: amount,
+            //    Price: price
+            //};
+            var sonuc = parseFloat(price)*Number(amount);
+            var formatNumber = format(sonuc);
+            console.log(formatNumber);
+
+            stringArray[i] = { "amount": amount.toString(), "shippinbgId": shippinghId.toString(), "productId": productId.toString(), "price": formatNumber.toString() };
+            console.log(stringArray[i]);
+        }
+        console.log(stringArray);
+      //  console.log(stringArray);
+        ClearHtml();
+        //var postData = { convertShippngDto: stringArray };
+        //console.log(stringArray);
+        $.ajax({
+            url: '@Url.Action("ShippingCofirmList2","Shipping")',
+            type: "POST",
+            data: JSON.stringify(stringArray),
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            success: function (data) {
+                $('#Siparisler').html("");
+                $('#Siparisler').html(data);
+                for (var i = 1; i < @Model.Count; i++) {
+                    $('#Amount_' + i).html("");
+                    $('#Price_' + i).html("");
+                }
+            },
+            error: function (data) {
+               // console.log(data.responseText);
+                $('#Siparisler').html("");
+                $('#Siparisler').html(data.responseText);
+
+            }
+
+        })
+        //var items = {
+        //      ShippinbgId: shippinghId,
+        //      ProductId: productIds,
+        //      Amount: amount,
+        //      Price: price
+        //  };
+        //var obj = new Object();
+        //obj.ShippinbgId = "1";
+
+        // var rr =JSON.stringify(obj);
+
+        //var ConvertShippngDto = [{ ShippinbgId: '1' }];
+        //var dataToSend = dizim;
+
+        // dataToSend = JSON.stringify({ 'body': ConvertShippngDto });
+        //$.ajax({
+        //    contentType: 'application/json; charset=utf-8',
+        //    dataType: 'json',
+        //     traditional: true,
+        //    //type: 'POST',
+        //    url: '@Url.Action("ShippingCofirmList","Shipping")',
+        //     data: JSON.stringify({ body: obj}),
+        //    success: function (data) {
+
+        //    }
+        //})
+    }
+
+
+
+
+                            //var url = '@Url.Action("AddShippingDetails","Shipping")?ShippingId=' + shippingId + '&productId=' + productId;
+                            //$.ajax({
+                            //    url: url,
+                            //    traditional: true,
+                            //    datatype: "JSON",
+                            //    async: true,
+                            //    method: 'POST',
+                            //    data: { "body": jsonConvert },
+                            //    success: function () {
+                            //        alert("tqama");
+                            //        //  console.log(shippingId);
+                            //        window.location.reload();
+                            //    }
+                            //});
+</script>
+

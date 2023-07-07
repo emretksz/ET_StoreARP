@@ -1,0 +1,518 @@
+﻿@model List<Entities.Concrete.Tenant>
+@{
+    Layout = Layout;
+    bool isAdmin = ViewBag.admin;
+}
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+@*burası !!!*@
+@if (isAdmin)
+{
+    
+
+    <div class="col-lg-12 grid-margin stretch-card" style="height:auto">
+    <div class="card">
+        <div class="card-body">
+            @*<center>
+
+            <h4 class="card-title">Firmalar</h4>
+            </center>*@
+            <div class="row">
+                <div class="col-4">   <h3 style="margin:5px">Firmalar için Excel Dökümü İstediğiniz Tarihi Seçiniz :</h3></div>
+                <div class="col-7"> <input class="form-control col-md-2" type="number" placeholder="YYYY" value="@DateTime.Now.Year" min="2022" max="2100" id="AllShippDate" style="margin:1px;margin-bottom:50px"></div>
+            </div>
+
+            <div class="table-responsive">
+                <table id="example" class="table border" style="width:100%; border:double">
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*burası !!!!!!!!!!!!!!!!!*@
+<div class="col-lg-8 grid-margin stretch-card" style="height:25%">
+    <div class="card">
+        <div class="card-body">
+            <center>
+
+            <h4 class="card-title">Belirli Tarihler Arasındaki Siparişler</h4>
+            </center>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                         @*   <th>Belirli Tarihler Arasındaki Siparişler</th>*@
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="row">
+                                    <div class="col-md-6 row " style="margin:auto;">
+
+                                        @Html.DropDownList("TenantId", new SelectList(ViewBag.Tenant, "Id", "TenantName"), new { @class = "form-control"  })
+                                        <span style="margin:5px">  Başlangıç :</span><input type="date" class="form-control" id="startDate" style="margin:1px" />
+                                        <span style="margin:5px">Bitiş : </span><input type="date" class="form-control" id="endDate" />
+                                        <center>
+                                            <button style="margin-top:3px" onclick="TarihlerArasi()" type="button" class="btn btn-outline-secondary">
+                                                <i class="ti-download"></i>
+                                            </button>
+                                        </center>
+
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+}
+<div class="col-lg-4 grid-margin stretch-card" style="height:25%">
+    <div class="card">
+        <div class="card-body">
+            <center>
+
+                <h4 class="card-title">Fabrika Yıllık Döküm</h4>
+            </center>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="row">
+                                    <div class="col-md-8 row " style="margin:auto;">
+                                        <center>
+                                        <span style="margin:5px">Tarih Gir :</span> <input class="form-control col-md-10" type="number" placeholder="YYYY" value="@DateTime.Now.Year" min="2022" max="2100" id="fabrikaDate" style="margin:1px;text-align:center"><br />
+                                        </center>
+                                        <button style="margin-top:3px" onclick="FabrikaErkek()" type="button" class="btn btn-outline-secondary">
+                                            Fabrika  Erkek Üretilen Mal
+                                                <i class="ti-download"></i>
+                                            </button>
+                                        <button style="margin-top:3px" onclick="FabrikaKız()" type="button" class="btn btn-outline-secondary">
+                                            Fabrika Kız Üretilen Mal
+                                            <i class="ti-download"></i>
+                                            </button>
+                                            <button style="margin-top:3px;float:left" onclick="KalanStokFabrikaErkek()" type="button" class="btn btn-outline-secondary" >
+                                          Fabrika Erkek Kalan Stok
+                                                <i class="ti-download"></i>
+                                        </button>    <button style="margin-top:3px" onclick="KalanStokFabrikaKız()" type="button" class="btn btn-outline-secondary">
+                                            Fabrika Kız Kalan Stok
+                                                <i class="ti-download"></i>
+                                            </button>
+
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-lg-12 grid-margin stretch-card" style="height:auto">
+    <div class="card">
+        <div class="card-body">
+            @*<center>
+
+            <h4 class="card-title">Firmalar</h4>
+            </center>*@
+            <div class="row">
+                <div class="col-4">   <h3 style="margin:5px">Firmalar için Kız/Erkek Toplam Üretilen Mallar:</h3></div>
+                <div class="col-7"> <input class="form-control col-md-2" type="number" placeholder="YYYY" value="@DateTime.Now.Year" min="2022" max="2100" id="AllShippDate" style="margin:1px;margin-bottom:50px"></div>
+            </div>
+
+            <div class="table-responsive">
+                <table id="FabrikaYilDokumuKızErkek" class="table border" style="width:100%; border:double">
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css" />
+@section Script{
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
+    <script>
+        function getir() {
+
+        }
+        $(document).ready(function () {
+            var q = [];
+            if ('@isAdmin') {
+                $.ajax({
+                    url: '@Url.Action("TenantOrderTable","Order")',
+                    success: function (datam) {
+                        var qqq = JSON.parse(datam);
+                        //console.log(qqq);
+                        for (var i = 0; i < qqq.length; i++) {
+                            //var ssss = [
+                            //   ];
+                            q.push({ 'Id': qqq[i].Id, 'TenantName': qqq[i].TenantName });
+
+
+                        }
+                        //console.log(q);
+                        //console.log([{ 'id': 20, 'main': 'hola', 'shrinked': false, 'clicks': 2000 }, { 'id': 21, 'main': 'hola', 'shrinked': false, 'clicks': 283000 }]);
+                        // console.log(q);
+                        $('#example').dataTable({
+                            "data": q,
+                            "autoWidth": true,
+                            "columns": [
+                                { "data": "Id" },
+                                { 'data': 'TenantName', 'title': 'Firma Adı' },
+                                //{ 'data': 'shrinked' },
+                                //{ 'data': 'clicks' },
+                                {
+                                    "data": "Id",
+                                    'title': 'Ürün ve Renk',
+                                    "render": function (data, type, row, meta) {
+                                        return `<button class="btn btn-danger" style="color:white" data-id="${data}" onclick="RenkVeUrunKiz(${data})"><i class="ti-download"></i>KIZ</button>` + `<button class="btn btn-primary" style="color:white;margin-left:10px"  data-id="${data}" onclick="RenkVeUrunErkek(${data})"><i class="ti-download"></i>Erkek</button>`
+                                    }
+                                },
+                                {
+                                    "data": "Id",
+                                    'title': 'Ayrıntılı Döküm',
+                                    "render": function (data, type, row, meta) {
+                                        return `<button class="btn btn-danger" style="color:white" data-id="${data}" onclick="TumSiparisleri(${data},1)"><i class="ti-download"></i>KIZ SİPARİŞ Dökümü</button>` + `<button class="btn btn-primary" style="color:white;margin-left:10px" data-id="${data}" onclick="TumSiparisleri(${data},2)"><i class="ti-download"></i>ERKEK SİPARİŞ DÖKÜMÜ</button>`
+                                    }
+                                },
+
+                            ],
+                            "language": {
+                                "search": "Arama Yap:",
+                                "paginate": {
+                                    "first": "İlk",
+                                    "last": "Son",
+                                    "next": "İlerile",
+                                    "previous": "Önceki"
+
+                                },
+                                "sInfo": "",// text you want show for info section
+
+
+                            },
+                        })
+                    }
+
+                });
+            }
+          
+
+        });
+
+      
+        //function ExceleRaportla(e) {
+        //    var spId = e.target.getAttribute('data-id');
+        //    //window.location.href = '@Url.Action("GetShippingOrderListForExcel","Temp")?Id=' + spId;
+
+        //    var url = '@Url.Action("GetShippingOrderListForExcel","Temp")?Id=' + spId;
+        //    $.ajax({
+        //        url: url,
+        //        success: function () {
+        //            window.location.href = '@Url.Action("Dowloand","Temp")';
+        //            //setTimeout(ShippingFirst, 3000);
+        //        }
+        //    });
+
+        //}
+
+        $(document).ready(function () {
+            var q = [];
+            $.ajax({
+                url: '@Url.Action("TenantOrderTable","Order")',
+                success: function (datam) {
+                    var qqq = JSON.parse(datam);
+                    //console.log(qqq);
+                    for (var i = 0; i < qqq.length; i++) {
+                        //var ssss = [
+                        //   ];
+                        q.push({ 'Id': qqq[i].Id, 'TenantName': qqq[i].TenantName });
+
+
+                    }
+                    //console.log(q);
+                    //console.log([{ 'id': 20, 'main': 'hola', 'shrinked': false, 'clicks': 2000 }, { 'id': 21, 'main': 'hola', 'shrinked': false, 'clicks': 283000 }]);
+                    // console.log(q);
+                    $('#FabrikaYilDokumuKızErkek').dataTable({
+                        "data": q,
+                        "autoWidth": true,
+                        "columns": [
+                            { "data": "Id" },
+                            { 'data': 'TenantName', 'title': 'Firma Adı' },
+                            //{ 'data': 'shrinked' },
+                            //{ 'data': 'clicks' },
+                            //{
+                            //    "data": "Id",
+                            //    'title': 'Ürün ve Renk',
+                            //    "render": function (data, type, row, meta) {
+                            //        return `<button class="btn btn-danger" style="color:grey" data-id="${data}" onclick="KizYillikDokumu(${data})"><i class="ti-download"></i>KIZ</button>` + `<button class="btn btn-primary" style="color:grey;margin-left:10px"  data-id="${data}" onclick="ErkekYillikDokum(${data})"><i class="ti-download"></i>Erkek</button>`
+                            //    }
+                            //},
+                            {
+                                "mData": function (data, type, dataToSet) {
+                                    //console.log(data);
+                                    var id= data.Id;
+                                    var tenantName= data.TenantName;
+                                    return `<button class="btn btn-danger" style="color:white" data-id="${id}" onclick="KizYillikDokumu('${tenantName}')"><i class="ti-download"></i>Kız Toplam Üretilen Mal</button>` + `<button class="btn btn-primary" style="color:white;margin-left:10px"  data-id="${id}" onclick="ErkekYillikDokumu('${tenantName}')"><i class="ti-download"></i>Erkek Toplam Üretilen Mal</button>` + `<button class="btn btn-success" style="color:white;margin-left:40px"  data-id="${id}" onclick="TenantStockListErkek('${tenantName}')"><i class="ti-download"></i>Erkek Kalan Stok</button>` + `<button class="btn btn-warning" style="color:white;margin-left:40px"  data-id="${id}" onclick="TenantStockListKiz('${tenantName}')"><i class="ti-download"></i>Kız Kalan Stok</button>`
+
+                                }
+                            }
+
+                        ],
+                        "language": {
+                            "search": "Arama Yap:",
+                            "paginate": {
+                                "first": "İlk",
+                                "last": "Son",
+                                "next": "İlerile",
+                                "previous": "Önceki"
+
+                            },
+                            "sInfo": "",// text you want show for info section
+
+
+                        },
+                    })
+                }
+
+            });
+
+        });
+
+    </script>
+    <script>
+        
+        //var allShipp = new Date;
+        //  document.getElementById("AllShippDate").addEventListener("change", function () {
+        //    allShipp = this.value;
+        //    console.log(allShipp);
+        //    //var sdate = new Date(input);
+        //    //console.log(input); //e.g. 2015-11-13
+        //    //console.log(sdate); //e.g. Fri Nov 13 2015 00:00:00 GMT+0000 (GMT Standard Time)
+        //});
+        
+        function TumSiparisleri(id,gender){
+            var allShip = $('#AllShippDate').val();
+      
+            $.ajax({
+                url: '@Url.Action("TenantOrderDowloand","Order")?tenantId=' + id + '&allShip=' + allShip+'&gender='+gender,
+                method:'POST',
+                success:function(){
+                    window.location.href = '@Url.Action("Dowloand","Order")';
+                }
+            });
+        }
+
+        function RenkVeUrunErkek(id) {
+            setTimeout(()=>{
+                SwalAlertFunc();
+            },1000);
+            var allShip = $('#AllShippDate').val();
+            var gender = true;
+            $.ajax({
+                url: '@Url.Action("RenkVeUrunList","Order")?tenantId=' + id + '&date=' + allShip + '&gender=' + gender,
+                method: 'POST',
+                success: function () {
+                    window.location.href = '@Url.Action("Dowloand","Order")';
+                }
+            });
+        }
+        function RenkVeUrunKiz(id) {
+            setTimeout(() => {
+                SwalAlertFunc();
+            }, 1000);
+            var allShip = $('#AllShippDate').val();
+            var gender = false;
+            $.ajax({
+                url: '@Url.Action("RenkVeUrunList","Order")?tenantId=' + id + '&date=' + allShip + '&gender=' + gender,
+                method: 'POST',
+                success: function () {
+                    window.location.href = '@Url.Action("Dowloand","Order")';
+                }
+            });
+        }
+
+
+        function FabrikaDokum(e) {
+            var allShip = $('#fabrikaDate').val();
+            var spId =0;
+           var x = true;
+            $.ajax({
+                url: '@Url.Action("TenantOrderDowloand","Order")?tenantId=' + spId + '&allShip=' + allShip + '&fabrikaMi='+x,
+                method: 'POST',
+                success: function () {
+                    window.location.href = '@Url.Action("Dowloand","Order")';
+                }
+            });
+        }
+        
+        document.getElementById("startDate").addEventListener("change", function () {
+         sdate = this.value;
+            //var sdate = new Date(input);
+            //console.log(input); //e.g. 2015-11-13
+            //console.log(sdate); //e.g. Fri Nov 13 2015 00:00:00 GMT+0000 (GMT Standard Time)
+        });
+        var sdate= new Date;
+        var edate=new Date  ;
+        document.getElementById("endDate").addEventListener("change", function () {
+           // console.log();
+             edate = this.value;
+           //edate = new Date(input);
+           // console.log(input); //e.g. 2015-11-13
+           // console.log(edate); //e.g. Fri Nov 13 2015 00:00:00 GMT+0000 (GMT Standard Time)
+        });
+        function TarihlerArasi() {
+            //for(var b=1; b <@Model.Count;b++){
+            //    //var sdate = $('#startDate_'+b).val();
+            //    //var edate = $('#endDate_' + b).val();
+            //    console.log(day);
+            //}
+            var id = $('#TenantId' ).val();
+           
+            $.ajax({
+                url: '@Url.Action("OrderByDatetime","Order")?tenantId=' + id + "&startDate=" + sdate + "&endDate=" + edate,
+                method: 'POST',
+                success: function () {
+                    window.location.href = '@Url.Action("Dowloand","Order")';
+                }
+            });
+        }
+        function FabrikaErkek(){
+            var datetime = $('#fabrikaDate').val();
+            var x = true;
+            $.ajax({
+                url: '@Url.Action("FabrikaErkekKiz","Order")?erkekMi=' + x + '&year='+datetime,
+               // method: 'POST',
+                success: function () {
+                    window.location.href = '@Url.Action("Dowloand","Order")';
+                }
+            });
+
+        }
+        function FabrikaKız() {
+            var datetime = $('#fabrikaDate').val();
+            var x = false;
+            $.ajax({
+                url: '@Url.Action("FabrikaErkekKiz","Order")?erkekMi=' + x+'&year='+datetime,
+                //method: 'POST',
+                success: function () {
+                    window.location.href = '@Url.Action("Dowloand","Order")';
+                }
+            });
+
+        }
+        function KalanStokFabrikaErkek() {
+            var datetime = $('#fabrikaDate').val();
+            var x = true;
+            var tenantName = "BARIŞ TEKSTİL";
+            $.ajax({
+               // url: '@Url.Action("YilSonuStok","Order")?datetimes=' + datetime,
+                url: '@Url.Action("YilSonuStok","Order")?datetimes=' + datetime + '&tenantName=' + tenantName + '&gender=' + x,
+                //method: 'POST',
+                success: function () {
+                    window.location.href = '@Url.Action("StockDowloand","Order")';
+                }
+            });
+
+        }
+        function KalanStokFabrikaKız() {
+            var datetime = $('#fabrikaDate').val();
+            var x = false;
+            var tenantName="BARIŞ TEKSTİL";
+            $.ajax({
+               // url: '@Url.Action("YilSonuStok","Order")?datetimes=' + datetime,
+                url: '@Url.Action("YilSonuStok","Order")?datetimes=' + datetime + '&tenantName=' + tenantName + '&gender=' + x,
+                //method: 'POST',
+                success: function () {
+                    window.location.href = '@Url.Action("StockDowloand","Order")';
+                }
+            });
+
+        }
+
+
+        function KizYillikDokumu(tenantName) {
+            //console.log(tenantName);
+            var x = false;
+            var datetime = $('#fabrikaDate').val();
+            $.ajax({
+                url: '@Url.Action("KizErkek","Order")?year=' + datetime + '&tenantName='+tenantName + '&erkekMi=' + x,
+                //method: 'POST',
+                success: function () {
+                    window.location.href = '@Url.Action("Dowloand","Order")';
+                }
+            });
+            
+        }
+        function ErkekYillikDokumu(tenantName) {
+
+           // console.log(tenantName);
+            var x = true;
+            var datetime = $('#fabrikaDate').val();
+            $.ajax({
+                url: '@Url.Action("KizErkek","Order")?year=' + datetime + '&tenantName=' + tenantName + '&erkekMi=' + x,
+                //method: 'POST',
+                success: function () {
+                    window.location.href = '@Url.Action("Dowloand","Order")';
+                }
+            });
+            
+        }
+        function TenantStockListKiz(tenantName) {
+
+            //console.log(tenantName);
+            var x = false;
+            var datetime = $('#fabrikaDate').val();
+            $.ajax({
+                url: '@Url.Action("YilSonuStok","Order")?datetimes=' + datetime + '&tenantName=' + tenantName + '&gender=' + x,
+                //method: 'POST',
+                success: function () {
+                    window.location.href = '@Url.Action("StockDowloand","Order")';
+                }
+            });
+            
+        }     
+        function TenantStockListErkek(tenantName) {
+
+           // console.log(tenantName);
+            var x = true;
+            var datetime = $('#fabrikaDate').val();
+            $.ajax({
+                url: '@Url.Action("YilSonuStok","Order")?datetimes=' + datetime + '&tenantName=' + tenantName + '&gender=' + x,
+                //method: 'POST',
+                success: function () {
+                    window.location.href = '@Url.Action("StockDowloand","Order")';
+                }
+            });
+            
+        }    
+        function SwalAlertFunc() {
+
+            var span = document.createElement("span");
+            span.innerHTML = "<strong>Excel dökümlerinde aynı ürün koduna sahip satırlar bulunabilir.</strong> Aynı ürünü farklı fiyatlardan verilmesi durumuna göre ürünlerin sipariş adetlerine bakılır: adet * fiyat = tutar olarak hesaplanarak Excel'e aktarılır.";
+
+            swal({
+                title: "Dikkat",
+                icon: 'info',
+                content: span,
+                allowOutsideClick: "true"
+            });
+        }
+
+
+    </script>
+
+
+
+}

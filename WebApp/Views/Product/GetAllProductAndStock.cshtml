@@ -1,0 +1,216 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@*model List<Entities.Concrete.Product>
+@{
+    Layout = Layout;
+}
+@*<div class="col-lg-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <center>
+                <h4 class="card-title">Ürün Listesi</h4>
+            </center>
+            @* <p class="card-description">
+            Add class <code>.table</code>
+            </p>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+
+                            <th>Ürün Resmi</th>
+                            <th>Barcod</th>
+                            <th>Model Kodu</th>
+                            <th>Model Adı</th>
+                            <th>Yaş</th>
+                            <th>Cinsiyet</th>
+                            <th>Renk</th>
+                            <th>Stock Adeti</th>
+                            <th>Eklenme Tarihi</th>
+
+                        </tr>
+                    </thead>
+                    @{
+                        int count = 1;
+                    }
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+
+                            <tr>
+                                <td> <img src="@item.ModelImageUrl" width="25%" /></td>
+                                <td>@item.Barcode</td>
+                                <td>@item.ModelCode</td>
+                                <td>@item.ModelName</td>
+                                <td>@item.ProductAges.Name</td>
+                                <td>@item.Gender</td>
+                                <td>@item.ModelColor</td>
+                                <td>@item.Stock.StockCount</td>
+                                <td>@item.RegisterDate</td>
+                                @if (Convert.ToInt64(item.ModelCount) < 100 && Convert.ToInt64(item.ModelCount) >= 1)
+                                {
+                                    <td><label style="color:black" class="badge badge-warning">Stok Azalmış</label></td>
+                                }
+                                else if (Convert.ToInt64(item.ModelCount) ==0)
+                                {
+                                    <td><label style="color:black" class="badge badge-danger">Stok yok</label></td>
+                                }
+                                else
+                                {
+                                    <td><label style="color:black" class="badge badge-success">Stokta var</label></td>
+                                        
+                                }
+                                @if (count==1)
+                                {
+                                    
+                                <td>
+                                    <a href="@Url.Action("UpdateProductStock","Product",new{productId=item.Id})" class="btn btn-dark btn-icon-text">
+                                        Güncelle
+                                        <i class="ti-file btn-icon-append"></i>
+                                    </a>
+                                </td>
+                                }
+                            </tr>
+                                count++;
+                        }
+                        <tr>
+
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>*@
+
+<div class="col-lg-12 grid-margin stretch-card" >
+    <div class="card">
+        <div class="card-body">
+            <center>
+
+            <h4 class="card-title">Stok Bilgisi</h4>
+            </center>
+            <div class="table-responsive">
+                <table id="example" class="table border" style="width:100%; border:double">
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css" />
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
+
+                                        <script>
+
+    $(document).ready(function () {
+        var counter=1;
+        var productId='@ViewBag.ProductId';
+        var q = [];
+        $.ajax({
+            url: '@Url.Action("GetAllProductAndStockJson","Product")?id=' + productId,
+            success: function (datam) {
+                var qqq = JSON.parse(datam);
+                console.log(qqq);
+                //console.log(qqq);
+                for (var i = 0; i < qqq.length; i++) {
+                    //var ssss = [
+                    //   ];
+                    q.push({ 'Id': qqq[i].Id, 'Barcode': qqq[i].Stock.RenkBarcode, 'ModelAdi': qqq[i].ModelName, 'Yas': qqq[i].ProductAges.Name, 'Cinsiyet': qqq[i].Gender, 'Renk': qqq[i].ModelColor, 'Stock': qqq[i].Stock.StockCount!=null?qqq[i].Stock.StockCount:0, 'EklenmeTarihi': qqq[i].RegisterDate, 'stockDurumu': qqq[i].Stock.StockCount});
+
+                }
+                if (q.length<1) {
+                    q.push({ 'Id': productId, 'Barcode': "", 'ModelAdi': "", 'Yas': "", 'Cinsiyet': "", 'Renk':"", 'Stock': "", 'EklenmeTarihi': "", 'stockDurumu': "" });
+
+                }
+               // console.log(q);
+                // console.log(q);
+                $('#example').dataTable({
+                    "data": q,
+                    "autoWidth": true,
+                    "columns": [
+                        { "data": "Id" },
+                        { 'data': 'Barcode', 'title': 'Barcode' },
+                        { 'data': 'ModelAdi', 'title': 'Model Adı' },
+                        { 'data': 'Yas', 'title': 'Yaş' },
+                        { 'data': 'Cinsiyet', 'title': 'Cinsiyet',
+                            'render': function (data) {
+                               // console.log(data);
+                              if(data=='1'){
+                                  return "Kız";
+                              }
+                              else if(data=='2'){
+                                   return "Erkek";
+                              }
+                              else {
+                                  return " ";
+                              }
+                             
+                            }
+                        
+                        },
+                        { 'data': 'Renk', 'title': 'Renk' },
+                        { 'data': 'Stock', 'title': 'StokAdeti' },
+                     
+                        {
+                            'data': 'EklenmeTarihi', 'title': 'Eklenme Tarihi',
+                            'render': function (jsonDate) {
+                                var date = jsonDate.substr(0, 10)
+                                return date;
+                            }
+                        },
+                        {
+                            'data': 'stockDurumu', 'title': 'Stok Durumu',
+                            "render": function (data, type, row, meta) {
+                                var countData = parseInt(data);
+                                if (countData < 100 && countData >= 1) {
+                                    return '<label style="color:black" class="badge badge-warning">Stok Azalmış</label>';
+                                }
+                                else if (countData == 0) {
+                                    return '<label style="color:black" class="badge badge-danger"> Stok yok </label>';
+                                }
+                                else {
+                                    return '<label style="color:black" class="badge badge-success"> Stokta var </label>';
+                                }
+                                //return '<button class="btn btn-outline-secondary" data-id="' + data + '" onclick="ExceleRaportla(event)">Excele Raporla </button>'
+                            }
+                        },
+                        {
+                            "data": "Id",
+                            "render": function (data, type, row, meta) {
+                              
+                                    return '<button class="btn btn-outline-secondary" data-id="' + data + '" onclick="UpdateStock(event)">Stoğu Güncelle </button>'
+             
+                            }
+                        }
+
+                    ],
+
+                    "language": {
+                        "search": "Arama Yap:",
+                        "paginate": {
+                            "first": "İlk",
+                            "last": "Son",
+                            "next": "İlerile",
+                            "previous": "Önceki"
+
+                        },
+                        "sInfo": "Şu Anki Sayfa {_START_} Toplam Sayfa {_TOTAL_}",// text you want show for info section
+
+
+                    },
+                })
+            }
+
+        });
+
+    });
+
+
+    function UpdateStock(e) {
+        var pId = e.target.getAttribute('data-id');
+        var url = '@Url.Action("UpdateProductStock","Product")?productId=' + pId
+        window.location.href = url;
+
+    }
+</script>

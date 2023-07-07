@@ -1,0 +1,245 @@
+﻿@model Entities.Dtos.ProductColorDto
+@{
+    Layout = Layout;
+    long colorCount = ViewBag.ColorCount;
+}
+
+
+
+
+<div class="col-lg-7 grid-margin stretch-card" style="height:50%">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Model</h4>
+            @*<p class="card-description">
+
+            </p>*@
+            @{
+                long productId = ViewBag.ProductId;
+            }
+            @Html.Hidden("ProductId",productId)
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Ürün Resmi</th>
+                            <th>Ürün Kodu</th>
+                            <th>Model Adı</th>
+                            <th>Cinsiyet</th>
+                            <th>Yaş</th>
+                            <th>Stock Adeti</th>
+                            <th>Renk</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            byte counter = 1;
+                        }
+                        @foreach (var item in Model.Products.OrderBy(a=>a.ModelColor))
+                        {
+                            if (counter == 1)
+                            {
+                                counter++;
+                            }
+                            <tr>
+
+                                <td> <img src="@item.ModelImageUrl" width="84px" height="84px" /></td>
+                                <td>@item.ModelCode</td>
+                                <td>@item.ModelName</td>
+                                <td>@item.ProductAges.Name</td>
+                                <td>@item.Gender</td>
+                                <td>@item.ModelCount</td>
+                                <td>@item.ModelColor</td>
+                                @*<td><label class="badge badge-danger">Pending</label></td>*@
+
+@*                               <td><label class="badge badge-danger"> <button class="badge badge-danger" onclick="Calistir()"> Gönder</button></label></td>
+*@                            </tr>
+                        }
+                      
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="col-lg-5 grid-margin stretch-card" id="updateColor">
+   
+</div>
+
+
+@section Scripts{
+
+    <script>
+        $.ajax({
+            url: '@Url.Action("UpdateProductStockColor","Product")',
+            success: function (data) {
+                $('#updateColor').html(data);
+            }
+        });
+
+        function ProductColorPartical(page) {
+            $.ajax({
+                url: '@Url.Action("UpdateProductStockColor","Product")?page=' + page,
+                success: function (data) {
+                    $('#updateColor').html(data);
+                }
+            });
+
+
+        }
+    </script>
+    <script>
+       
+        function Calistir() {
+            var sdate = $('#fabrikaDate').val();
+            var colorCountStock = $('#colorStockCount').val();
+            //alert(colorCountStock);
+             var magazaMi=false;
+            if ($('#magazaMi').is(":checked")) {
+                magazaMi=true;
+            }
+           
+            if(magazaMi){
+                swal({
+                    title: sdate + "Magaza Stoğuna Ekliyorsunuz!",
+                    text: "Emin Misiniz?",
+                    icon: "warning",
+                    buttons: true,
+                    dangerMode: true,
+                    buttons: ["Hayır", "Evet"],
+                }).then((willDelete) => {
+                    if (willDelete) {
+                        swal("Magaza Stoğuna Ekleniyor", {
+                            icon: "success",
+                        });
+                        var productId = $('#ProductId').val();
+                        var ColorDto = [];
+                        var colors = "";
+                        var count = "";
+                        for (var b = 1; b <= colorCountStock; b++) {
+                            var gelenCount = $('#color_' + b).val();
+                            var gelenRenk = $('#colorCount_' + b).val();
+                            if (gelenCount != "" && gelenCount != 0 && gelenCount != null) {
+                                colors += $('#color_' + b).val() + ",";
+                                count += $('#colorCount_' + b).val() + ",";
+                                var g1 = $('#color_' + b).val() + ",";
+                                var g2 = $('#colorCount_' + b).val() + ",";
+                                var d = {
+                                    Count: g2,
+                                    ColorName: g1,
+                                }
+                                ColorDto.push(d);
+                            }
+
+                        }
+
+                        var jsonConvert = JSON.stringify(ColorDto);
+                       // console.log(jsonConvert);
+                        $.ajax({
+                            url: '@Url.Action("AddColorForProduct","Product"/*,new{productId=productId}*/)?productId=' + productId + '&date=' + sdate,
+                            traditional: true,
+                            datatype: "JSON",
+                            async: true,
+                            method: 'POST',
+                            data: { update: true, "body": jsonConvert },
+                            success: function () {
+                                window.location.reload();
+                                //window.location.href = "/Product/ProductIndex";
+                            }
+                        });
+
+
+
+                    } else {
+                      //  console.log(willDelete);
+                        swal("İptal Edildi!");
+                    }
+                });
+
+
+            }
+            else{
+                swal({
+                    title: sdate+" "+ " Fabrika Stoğuna Ekliyorsun",
+                    text: "Emin Misiniz?",
+                    icon: "warning",
+                    buttons: true,
+                    dangerMode: true,
+                    buttons: ["Hayır", "Ekle"],
+                }).then((willDelete) => {
+                    if (willDelete) {
+                        swal("Fabrika Stoğuna  Ekleniyor", {
+                            icon: "success",
+                        });
+                        var productId = $('#ProductId').val();
+                        var ColorDto = [];
+                        var colors = "";
+                        var count = "";
+                        for (var b = 1; b <= colorCountStock; b++) {
+                            var gelenCount = $('#color_' + b).val();
+                            var gelenRenk = $('#colorCount_' + b).val();
+                                          var gelenBarcode = $('#barcode_' + b).val();
+                            if (gelenCount != "" && gelenCount != 0 && gelenCount != null) {
+                                colors += $('#color_' + b).val() + ",";
+                                count += $('#colorCount_' + b).val() + ",";
+                                var g1 = $('#color_' + b).val() + ",";
+                                var g2 = $('#colorCount_' + b).val() + ",";
+
+                                var barcode = "";
+                                if (gelenBarcode != null && gelenBarcode != "") {
+                                    barcode = gelenBarcode;
+                                }
+
+                                var d = {
+                                    Count: g2,
+                                    ColorName: g1,
+                                    Barcode: barcode,
+                                }
+                                ColorDto.push(d);
+                            }
+
+                        }
+
+                        var jsonConvert = JSON.stringify(ColorDto);
+                       // console.log(jsonConvert);
+                        $.ajax({
+                            url: '@Url.Action("AddColorForProduct","Product"/*,new{productId=productId}*/)?productId=' + productId + '&date=' + sdate,
+                            //url: '@Url.Action("AddColorForProduct","Product"/*,new{productId=productId}*/)?productId=' + productId ,
+                            traditional: true,
+                            datatype: "JSON",
+                            async: true,
+                            method: 'POST',
+                            data: { update: true, "body": jsonConvert },
+                            success: function () {
+                                         window.location.reload();
+                                //window.location.href = "/Product/ProductIndex";
+                            }
+                        });
+
+
+
+                    } else {
+                        //console.log(willDelete);
+                        swal("İptal Edildi!");
+                    }
+                });
+
+
+
+
+
+            }
+
+          
+
+          
+
+        }
+    </script>
+
+
+
+}

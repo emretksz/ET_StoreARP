@@ -1,0 +1,405 @@
+﻿@using X.PagedList;
+@using X.PagedList.Mvc.Core;
+@model IPagedList<Entities.Concrete.Product>
+@{
+    Layout = Layout;   long ids = 0;
+    if (ViewBag.Ids!=null)
+    {
+     ids=Convert.ToInt64(ViewBag.Ids);
+    }
+ 
+}
+
+@Html.Hidden("shipping",ids)
+<div class="col-lg-6 grid-margin stretch-card" style="height:50%">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Ürünler</h4>
+            @*<p class="card-description">
+
+            </p>*@
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Ürün Resmi</th>
+                            <th>Ürün Kodu</th>
+                            <th>Model Adı</th>
+                            <th>Cinsiyet</th>
+                            <th>Yaş</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            var q = 1;
+                        }
+                        @foreach (var item in Model)
+                       {
+                           
+                        <tr>
+                            <td> <img src="@item.ModelImageUrl" width="25%" /></td>
+                                <td>@item.ModelCode</td>
+                                <td>@item.ModelName</td>
+                                <td>@item.Gender</td>
+                                <td>@item.Age</td>
+
+                            @*<td><label class="badge badge-danger">Pending</label></td>*@
+                                <td>
+                                    <div class="form-check form-check-primary">
+                                        <label class="form-check-label">
+                                            <input type="radio" @*onchange="RadioChange()"*@ class="form-check-input" name="productId" id="productId_@q" value="@item.Id" >
+                                           Seçim Yap
+                                            <i class="input-helper"></i>
+                                        </label>
+                                    </div>
+                                </td>
+                            </tr>
+                            q++;   
+                        }
+                        <tr>
+                            <td></td>
+                            <td></td>
+                      
+                            <td>
+                          @*      @{
+                                    var productCounts = ViewBag.ProductCount;
+                                    if (productCounts>=10)
+                                    {
+                                        productCounts = productCounts / 5;
+                                    }
+                                    else if (productCounts<=5)
+                                    {
+                                        productCounts = 1;
+                                    }
+                                    else if (productCounts > 5&& productCounts<=9)
+                                    {
+                                        productCounts = 2;
+                                    }
+                                }*@
+                                <div class="btn-group" role="group" aria-label="Basic example">
+                                   @* @for (int b =0; b < productCounts; b++)
+                                    {
+                                        <a class="btn btn-outline-secondary" href="@Url.Action("AddShippingDetail","Shipping",new{page=b+1})">@(b+1)</a>
+                                    }*@
+                         
+                                    @Html.PagedListPager((IPagedList)Model,page=>Url.Action("AddShippingDetail",new{page}),   
+                                    new X.PagedList.Web.Common.PagedListRenderOptions {
+                                    DisplayLinkToIndividualPages = true,
+                                    DisplayPageCountAndCurrentLocation = false,
+                                    MaximumPageNumbersToDisplay = 10,
+                                    LiElementClasses = new string[] { "page-item" },
+                                    PageClasses = new string[] { "page-link" }})
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="col-lg-6 grid-margin stretch-card" id="colorParticalAdd">
+
+
+</div>
+
+
+
+
+<div class="col-lg-12 grid-margin stretch-card" id="shippingComplated">
+
+</div>
+
+
+<!-- Button trigger modal -->
+
+@section ModalFade{
+    <div class="modal fade" id="exampleModalCenter" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        
+    </div>
+   
+    <script>
+        //$(document).on('click', 'a', function () {
+        //    $.ajax({
+        //        url: this.href,
+        //        type: 'GET',
+        //        cache: false,
+        //        success: function (result) {
+        //            $('#colorParticalAdd').html(result);
+        //        }
+        //    });
+        //    return false;
+        //});
+
+        $(document).ready(function(){
+            $.ajax({
+                url: '@Url.Action("ShippingComplated","Shipping")',
+                success: function (data) {
+                    $('#shippingComplated').html(data);
+                }
+            })
+
+        });
+      
+        
+        </script>
+
+    <script>
+        $('#update').click(function () {
+
+            var count = $('#count').val();
+            
+            $.ajax({
+                url: '@Url.Action("UpdateShippingDetails","Shipping")?ShippingId=' + shippingId + '&productId=' + productId + '&colorId=' + colorId + '&count=' + count,
+                traditional: true,
+                datatype: "JSON",
+                async: true,
+                method: 'POST',
+                data: {},
+                success: function () {
+                    //alert("tqama");
+                    //  console.log(shippingId);
+                    window.location.reload();
+                }
+            })
+
+        })
+    </script>
+}
+
+<!-- Modal -->
+
+
+
+
+@*Sipariş kayıt için renkleri de içerecek ve controllerda json a  çevrilecekkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk*@
+
+@section Scripts{
+    <script>
+
+        $.ajax({
+         url:'@Url.Action("AddShippingDetailsColorPartical","Shipping")',
+             success:function(data){
+                    $('#colorParticalAdd').html(data);
+             }
+        });
+
+    </script>
+    <script>
+
+        function SiparisOnayi(ids) {
+            window.location.href = '@Url.Action("ComplatedShippin","Shipping")?ShippinbgId=' + ids;
+        }
+        </script>
+
+    <script>
+        function gonder(a,b,c,d,e) {
+            console.log(a,b,c,d);
+            $('#exampleModalCenter').html(`
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                                <form asp-controller="Shipping" asp-action="UpdateShippingDetails"   method="post">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabel">Babam benim</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                                <div class="table-responsive pt-3">
+                                                    <table class="table table-light">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Model Adı</th>
+                                                                <th>Renk</th>
+                                                                        <th>Miktar</th>
+                                                                        <th></th>
+                                                            </tr>
+
+                                                        </thead>
+                                                        <tbody>
+                                                    <tr>
+                                                            <td>
+                                                                      <div class="form-group">
+                                                                                
+                                                             <input type="text" class="form-control" id="ProductId" name="ProductId" value="${a}" hidden/>
+                                                             <input type="text" class="form-control" id="ColorId" name="ColorId" value="${c}" hidden/>
+                                                                     <input type="text" class="form-control" id="ShippingId" name="ShippinbgId" value="${e}" hidden/>
+                                                            ${b}
+                                                            </div>
+                                                             </td>
+                                                                     <td>
+                                                                              
+                                                                    ${d}
+                                                                     </td>
+                                                                             <td>
+                                                                                          <div class="form-group">
+                                                                       <input type="text" class="form-control" id="CountId" name="CountId"/>
+                                                                                                </div>
+                                                                             </td>
+                                                                           
+                                                    
+                                                        </td>
+                                                    </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                 </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                        <button onclick="Update()"   type="submit" class="btn btn-primary">Save changes</button>
+                                    </div>
+                                             </form>
+                            </div>
+                        </div>
+
+               
+
+                    `
+                    
+                  
+                    
+                    );
+            $('#exampleModalCenter').modal('show');
+       }
+        //$('#gonder').on('click', function () {
+        //    console.log("xddd");
+            
+        //})
+
+    </script>
+
+    <script>
+     
+        function RadioChange(){
+            var productId = "";
+            var ele = document.getElementsByTagName('input');
+            for (i = 0; i < ele.length; i++) {
+
+                if (ele[i].type = "radio") {
+                    if (ele[i].checked)
+                    productId=ele[i].value
+                }
+            }
+            return productId;
+        }
+        //function Calistir(e) {
+
+        //    var shippingId = $('#shipping').val();
+        //    console.log(shippingId);
+        //    var productId = RadioChange();
+        //    //console.log($('#productId').val());
+        //    var ColorDto = [];
+        //    var colors = "";
+        //    var count = "";
+        //    for (var b = 1; b <= 'Model.ProductColor.Count'; b++) {
+        //        var gelenCount = $('#color_' + b).val();
+        //        var gelenRenk = $('#colorCount_' + b).val();
+        //        if (gelenCount != "" && gelenCount != 0 && gelenCount != null) {
+        //            colors += $('#color_' + b).val() + ",";
+        //            count += $('#colorCount_' + b).val() + ",";
+        //            var g1 = $('#color_' + b).val() + ",";
+        //            var g2 = $('#colorCount_' + b).val() + ",";
+
+        //            var d = {
+        //                Count: g2,
+        //                ColorName: g1,
+        //            }
+        //            //var xx=[{
+        //            //      "Count" :g1,
+        //            //      "ColorName": g2
+        //            //  }
+        //            //]
+        //            ColorDto.push(d);
+        //        }
+
+        //    }
+      
+        //    var jsonConvert = JSON.stringify(ColorDto);
+        //    console.log(jsonConvert);
+
+        //    var url = 'Url.Action("AddShippingDetails","Shipping")?ShippingId=' + shippingId + '&productId=' + productId;
+        //    $.ajax({
+        //        url:url,
+        //        traditional: true,
+        //        datatype: "JSON",
+        //        async:true,
+        //        method: 'POST',
+        //        data: { "body": jsonConvert },
+        //        success: function () {
+        //            alert("tqama");
+        //          //  console.log(shippingId);
+        //            window.location.reload();
+        //       }
+        //    });
+          
+
+        //}
+
+                function Update() {
+                        var count = $('#CountId').val();
+                        var productId = $('#ProductId').val();
+                        var colorId = $('#ColorId').val();
+                        var shippingId = $('#ShippingId').val();
+                        $.ajax({
+                url: '@Url.Action("UpdateShippingDetails","Shipping")?ShippinbgId=' + shippingId + '&productId=' + productId + '&colorId=' + colorId + '&ShippingCount=' + count,
+                            traditional: true,
+                            datatype: "JSON",
+                            async: true,
+                            method: 'POST',
+                            data: {},
+                            success: function () {
+                                console.log("xxxxx");
+                                window.location.reload();
+                            }
+                        })
+                  }
+
+
+
+
+        function Delete(a,b,c) {
+            var productId = a;
+            var colorId = b;
+            var shippingId =c;
+            $.ajax({
+                url: '@Url.Action("DeleteShippinDetails","Shipping")?ShippinbgId=' + shippingId + '&productId=' + productId + '&colorId=' + colorId,
+                traditional: true,
+                datatype: "JSON",
+                async: true,
+                method: 'POST',
+                data: {},
+                success: function () {
+                  
+                    window.location.reload();
+                }
+            })
+        }
+        //$('#update').click(function(){
+
+        //    var count = $('#count').val();
+        //    console.log("girdim keee");
+        //    $.ajax({
+        //        url: '@Url.Action("UpdateShippingDetails","Shipping")?ShippingId=' + shippingId + '&productId=' + productId + '&colorId=' + colorId + '&count=' + count,
+        //        traditional: true,
+        //        datatype: "JSON",
+        //        async: true,
+        //        method: 'POST',
+        //        data: {},
+        //        success: function () {
+        //            alert("tqama");
+        //            //  console.log(shippingId);
+        //            window.location.reload();
+        //        }
+        //    })
+
+        //})
+
+         
+    </script>
+
+
+
+}

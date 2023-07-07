@@ -1,0 +1,113 @@
+﻿@using X.PagedList;
+@using X.PagedList.Mvc.Core;
+@using X.PagedList.Web.Common;
+@model IPagedList<Entities.Concrete.Product>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Ürün Resmi</th>
+                <th>Barcod</th>
+                <th>Ürün Kodu</th>
+                <th>Model Adı</th>
+                <th>Yaş</th>
+                <th>Cinsiyet</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+{
+            <tr>
+                <td ><img src="@item.ModelImageUrl" width="84px" height="84px" style="height:84px !important; width:84px !important;" /></td>
+                <td>@item.Barcode</td>
+                <td>@item.ModelCode</td>
+                <td>@item.ModelName</td>
+                @if (item.ProductAges!=null)
+                {
+                    <td>@item.ProductAges.Name</td>
+                }else
+                {
+                <td> </td>
+                }
+                <td>@item.Gender</td>
+                @*<td><label class="badge badge-danger">Pending</label></td>*@
+                <td>
+                    <a class="btn btn-dark btn-fw" href="@Url.Action("GetAllProductAndStock","Product",new{id=item.Id})">
+                        Stoğa Git
+                    </a>
+                    <a class="btn btn-warning btn-icon-text" href="@Url.Action("UpdateProduct","Product",new{id=item.Id})">
+                        <i class="ti-reload btn-icon-prepend"></i>
+                        Güncelle
+                    </a>
+                    <a class="btn btn-danger  btn-icon" onclick="DeleteProduct(@item.Id)" @* href="@Url.Action("Delete","Product",new{id=item.Id})"*@>
+                        <i class="mdi mdi-delete-forever"></i>
+
+                    </a>
+                </td>
+            </tr>
+            }
+            <tr>
+                <td>
+
+                @{
+                    bool searchMu = ViewBag.search;
+                }
+                @if (!searchMu)
+                {
+                    @*  <div class="btn-group" role="group" aria-label="Basic example">
+                        @Html.PagedListPager((IPagedList)Model,  page=>Url.Action("ProductIndex",new{page}),
+                    new X.PagedList.Web.Common.PagedListRenderOptions {
+                    LiElementClasses = new string[] { "page-item" },
+                    PageClasses = new string[] { "page-link" }})
+                    </div>*@
+                    <div class="btn-group" role="group" aria-label="Basic example">
+                        @Html.PagedListPager((IPagedList)Model,page=>Url.Action("ProductIndex",new{page}),
+                    new X.PagedList.Web.Common.PagedListRenderOptions {
+                    DisplayLinkToIndividualPages = true,
+                    DisplayPageCountAndCurrentLocation = false,
+                    MaximumPageNumbersToDisplay = 10,
+                    LiElementClasses = new string[] { "page-item" },
+                    PageClasses = new string[] { "page-link" }})
+                    </div>
+                }
+              
+@*                @Html.PagedListPager( Model, page => Url.Action("ProductPartical",
+                new { page}),
+                X.PagedList.Web.Common.PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing( new X.PagedList.Web.Common.AjaxOptions(){  HttpMethod = "GET", UpdateTargetId = "student_table"}) )
+                    <div class="btn-group" role="group" aria-label="Basic example">*@
+@*
+                    @Html.PagedListPager((IPagedList)Model,  page=>Url.Action("ProductPartical",new{page}),
+                    new X.PagedList.Web.Common.PagedListRenderOptions {
+                    LiElementClasses = new string[] { "page-item" },
+                    PageClasses = new string[] { "page-link" }})*@
+                 @*   </div>*@
+
+
+@*
+                <div id="myPager">
+                    @Html.PagedListPager(
+                    Model,
+                    page => Url.Action(
+                    "ProductPartical",
+                    new {
+                    page = page
+                    }
+                    ),
+                    new PagedListRenderOptions
+                    {
+                    LinkToFirstPageFormat = "<<",
+                    LinkToPreviousPageFormat = "prev",
+                    LinkToNextPageFormat = "next",
+                    LinkToLastPageFormat = ">>",
+                    }
+                    )
+                </div>*@
+                </td>
+            </tr>
+
+
+        </tbody>
+    </table>
+    <script>
+   
+    </script>

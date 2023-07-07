@@ -1,0 +1,89 @@
+﻿@*@using PagedList.Core.Mvc;*@
+@using X.PagedList;
+@using X.PagedList.Mvc.Core;
+@model IPagedList<Entities.Dtos.OrderPriceAndProduct>
+
+<div class="col-lg-2 grid-margin stretch-card">
+</div>
+<div class="col-lg-8 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Sipariş Dökümü</h4>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Firma</th>
+                            <th>Tarih</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                       {
+                           
+                        <tr>
+                            <td>@item.TenantName</td>
+                            <td>@item.OrderTarih</td>
+                         
+                                <td>
+                                 
+                                    <button onclick="DokumuAl(@item.OrderDateId)" type="button" class="btn btn-danger btn-icon-text" >
+                                        <i class="ti-download"></i>
+                                        İndir
+                                    </button>
+                                </td>
+                        </tr>
+                       }
+                        @{
+                            var productCounts = ViewBag.PageCount;
+                            if (productCounts >= 10)
+                            {
+                                productCounts = productCounts / 5;
+                            }
+                            else if (productCounts <= 5)
+                            {
+                                productCounts = 1;
+                            }
+                            else if (productCounts > 5 && productCounts <= 9)
+                            {
+                                productCounts = 2;
+                            }
+                        }
+                        <tr>
+                            <td>
+                             @*   <div class="btn-group" role="group" aria-label="Basic example">
+                                    @for (int b = 0; b < productCounts; b++)
+                                    {
+                                        <a class="btn btn-outline-secondary" href="@Url.Action("OrderIndex","Order",new{page=b+1})">@(b + 1)</a>
+                                    }
+
+                                </div>*@
+                                <div class="btn-group" role="group" aria-label="Basic example">
+                                    @Html.PagedListPager((IPagedList)Model,page=>Url.Action("OrderIndex",new{page}),
+                                    new X.PagedList.Web.Common.PagedListRenderOptions {
+                                    DisplayLinkToIndividualPages = true,
+                                    DisplayPageCountAndCurrentLocation = false,
+                                    MaximumPageNumbersToDisplay = 10,
+                                    LiElementClasses = new string[] { "page-item" },
+                                    PageClasses = new string[] { "page-link" }})
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+    function DokumuAl(id){
+          $.ajax({
+            url: '@Url.Action("FiyatlandirilmisOrder","Order")?dateId='+id,
+            success:function(){
+                window.location.href = "@Url.Action("DowloandFiyatlandirma","Order")";
+            }
+          });
+    }
+  
+</script>

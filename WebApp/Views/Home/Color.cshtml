@@ -1,0 +1,16 @@
+﻿@{
+    Layout = Layout;
+    ViewData["Title"] = "Color";
+}
+
+<form class="row g-3" asp-action="AddColor" asp-controller="Home">
+    <div class="col-auto">
+        <label for="staticEmail2" class="visually-hidden">Renk Seç</label>
+    </div>
+    <div class="col-auto">
+        <input type="text" class="form-control" name="ColorName" id="ColorName" placeholder="ColorName">
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-primary mb-3">Confirm identity</button>
+    </div>
+</form>

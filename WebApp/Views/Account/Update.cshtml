@@ -1,0 +1,32 @@
+﻿@model Entities.Dtos.UserAndRoleDto
+@{
+    Layout = Layout;
+}
+<div class="col-md-6 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Kullanıcı Güncelle</h4>
+            <p class="card-description">
+            </p>
+            <form class="forms-sample" asp-action="Update" asp-controller="Account">
+                @Html.Hidden("Id",Model.UserId)
+                <div class="form-group">
+                    <label for="exampleInputUsername1">Kullanıcı Adı</label>
+                    <input type="text" class="form-control" id="UserName" name="UserName" value="@Model.UserName" placeholder="Kullanıcı Adı" required>
+                    <label for="exampleInputUsername1">Email Adresi</label>
+                    <input type="text" class="form-control" id="Email" name="Email" value="@Model.Email" placeholder="Email" required>
+                    <label for="exampleInputUsername1">Şifre</label>
+                    <input type="text" class="form-control" id="Password"  name="Password" value="" placeholder="Şifre" required>
+                    <label for="exampleInputUsername1">Rolü</label>
+                    <br />
+                    <span>Şu anki Rolü: @Model.RoleName </span>
+       @*             @Html.DropDownList("RoleId",new SelectList(ViewBag.Roles),"",new{@class="btn btn-danger btn-sm dropdown-toggle"})*@
+                    @Html.DropDownListFor(m => m.RoleId  ,
+                    new SelectList(ViewBag.Roles, "Id", "RoleName"),
+                    "", new { @class = "form-control" })
+                </div>
+                <button type="submit" class="btn btn-primary me-2">Güncelle</button>
+            </form>    
+        </div>
+    </div>
+</div>
